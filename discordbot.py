@@ -242,17 +242,21 @@ async def 신청(ctx):
     await ctx.channel.send(str(ctx.author.mention + f" 감사! {crnt_num}/{full_num}"))
     await ctx.message.delete()
     
-'''
+
 #need to be seperate
 @bot.command()
 async def 취소(ctx):
     
-    global crnt_num, crnt_usr, full_num, is_init
+    global gld_data
 
     
-    if not is_init:
+    if not (gld_data["gld"]==ctx.message.guild.id).any():
         await ctx.channel.send(str(ctx.author.mention + "!init으로 초기화 해주세요"))
         return
+    
+    crt_idx = gld_data.index[(gld_data['gld'] == ctx.message.guild.id)][0]
+    crnt_num = gld_data.loc[crt_idx,"crnt_num"]
+    full_num = gld_data.loc[crt_idx,"full_num"]
     
     if (full_num == 0):
         await ctx.channel.send(str(ctx.author.mention + " 금일 거점이 설정되지 않았습니다."))
@@ -262,6 +266,7 @@ async def 취소(ctx):
         await ctx.channel.send("리스트가 비어있습니다")
         return
 
+    crnt_usr = gld_data.loc[crt_idx,"crnt_usrs"]
     usr_name = str(ctx.author.display_name)
     usr_name = usr_name.replace(' ', '')
     usr_name = usr_name[usr_name.find(']')+1:]
@@ -274,10 +279,12 @@ async def 취소(ctx):
     crnt_usr.drop(usr_n, axis=0, inplace=True)
     crnt_usr.reset_index(inplace=True, drop=True)
     crnt_num = crnt_num-1
+    
+    role_attend = gld_data.loc[crt_idx,"role_attend"]
     await ctx.author.remove_roles(role_attend)
     await ctx.channel.send(str(ctx.author.mention + f" 잘가시지~ {crnt_num}/{full_num}"))
     await ctx.message.delete()
-
+'''
 #need to be seperate
 @bot.command()
 async def 참가자(ctx):
