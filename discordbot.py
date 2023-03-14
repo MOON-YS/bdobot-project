@@ -26,37 +26,40 @@ today_nws = nw_data[nw_data['date']=="일요일"].astype(str)
 today_nw = nw_data
 wd = {0:'월요일', 1:'화요일', 2:'수요일',3:'목요일',4:'금요일',5:'토요일', 6:'일요일'}
 
+gld_count = 0
+gld_data = pd.DataFrame(columns=['gld',
+                                    'is_init','is_roleChecked', 
+                                    'crnt_num', 'full_num',
+                                    'update_ch','role_attend'
+                                    'td_info','crnt_usrs'])
+gld_data.head(10)
+
+
+
 #bot on ready
 @bot.event
 async def on_ready():
     print("Bot is ready")
     await bot.change_presence(status=discord.Status.online, activity=discord.Game("v0.5b"))
 
-channel = 0
-full_num = 0
-crnt_num = 0
 np_tdnw = 0
 cur_wd = -1
 pre_wd = -1
-role_attend = 0
-is_roleChecked = False
-is_init = False
 
-crnt_usr = pd.DataFrame(columns=['name','guild','id'])
-crnt_usr.head(10)
 #need to be seperate
-
-
 @bot.command()
 async def init(ctx):
+    
     if not ctx.author.top_role.permissions.administrator:
         await ctx.channel.send(str(ctx.author.mention + "권한이 없습니다."))
         return
+    global wd ,today_nw, today_nws, full_num, np_tdnw, role_attend, channel, gld_data, gld_count
     
-    global wd ,today_nw, today_nws, full_num, np_tdnw, crnt_num, crnt_usr, is_roleChecked, role_attend, is_init, channel
-    if is_init:
-       await ctx.channel.send(str(ctx.author.mention + "이미 초기화를 했습니다."))
-       return 
+    if((gld_data["gld"]==ctx.message.guild.id).any()):
+        await ctx.channel.send(str(ctx.author.mention + "이미 초기화를 했습니다."))
+        return 
+    
+    is_roleChecked = False
     
     if not is_roleChecked:
         for i in range(len(ctx.guild.roles)):
@@ -66,29 +69,30 @@ async def init(ctx):
                 is_roleChecked = True
                 break
         
-        if not is_roleChecked:   
-            await ctx.channel.send(str(ctx.author.mention + "참여자 역할이 서버에 존재하지 않습니다."))
-            return
+    if not is_roleChecked:   
+        await ctx.channel.send(str(ctx.author.mention + "참여자 역할이 서버에 존재하지 않습니다."))
+        return
     
-    is_init = True
+    
+    crnt_usr = pd.DataFrame(columns=['name','guild','id'])
+    crnt_usr.head(10)
+ 
+    gld_data.loc[gld_count] = [ctx.message.guild.id, True, True, 0, 0, ctx.message.channel.id, role_attend, 0, crnt_usr]
+    gld_count += 1
     await ctx.channel.send(str(ctx.author.mention + "초기화 완료."))
     channel = ctx.channel
     await channel.send(f"{channel.name} 에서 갱신합니다.")
     await ctx.message.delete()
     
-            
+'''     
 #send today nord war list (1stage)
 #need to be seperate
 @bot.command()
 async def setTd(ctx):
-    global wd ,today_nw, today_nws, full_num, np_tdnw, crnt_num, crnt_usr, is_roleChecked, role_attend, is_init
+    global wd , today_nws, gld_data
     
-    if not is_init:
+    if not (gld_data["gld"]==ctx.message.guild.id).any():
         await ctx.channel.send(str(ctx.author.mention + "!init으로 초기화 해주세요"))
-        return
-    
-    if not is_roleChecked:
-        await ctx.channel.send(str(ctx.author.mention + "참여자 역할이 설정되지 않았습니다."))
         return
     
     if not ctx.author.top_role.permissions.administrator:
@@ -366,13 +370,7 @@ async def sayTest(ctx):
     
     await channel.send(f"{channel.name} Test done")
     
-@bot.command()
-async def dev(ctx):
-    for guild in bot.guilds:
-        print("=========")
-        print(guild)
-    
-    print("current = " + str(ctx.message.guild.id))
+
 
     
 
@@ -424,7 +422,16 @@ async def every_day():
             time.sleep(1)
     
 every_day.start() 
+'''   
 
+@bot.command()
+async def dev(ctx):
+    for guild in bot.guilds:
+        print("=========")
+        print(guild)
+    
+    print("current = " + str(ctx.message.guild.id))
+       
 try:
     bot.run(TOKEN)
 except discord.errors.LoginFailure as e:
