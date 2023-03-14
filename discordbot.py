@@ -13,6 +13,7 @@ from pytz import timezone
 from discord.ext import tasks
 from verbalexpressions import VerEx
 
+
 verbal_expression = VerEx()
 
 nameTester = (verbal_expression.
@@ -200,6 +201,7 @@ async def 신청(ctx):
         return
     
     usrname = str(ctx.author.display_name)
+    print(usrname)
     if nameTester.match(usrname):
         await ctx.channel.send(str("잘못된 이름형식입니다. [길드]가문명 으로 서버닉네임을 변경해주세요"))
         return
