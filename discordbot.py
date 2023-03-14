@@ -104,6 +104,7 @@ async def setTd(ctx):
         await ctx.channel.send("오늘은 거점전이 진행되지 않습니다.")
         return
     
+    #reset yesterday data
     crt_idx = gld_data.index[(gld_data['gld'] == ctx.message.guild.id)][0]
     
     gld_data.loc[crt_idx,"crnt_usrs"] = pd.DataFrame(columns=['name','guild','id'])
@@ -118,7 +119,7 @@ async def setTd(ctx):
     for usr in attends:
         await usr.remove_roles(role_attend)
         
-    
+    #update today NWs
     print(f"updated Today: {wd[datetime.now(timezone('Asia/Seoul')).weekday()]} ")
     s = [""]
     for i in range(0, today_nws['area'].count()):
