@@ -1,4 +1,6 @@
 import pandas as pd
+from verbalexpressions import VerEx
+verbal_expression = VerEx()
 
 crnt_usr = pd.DataFrame(columns=['name','guild','id'])
 crnt_usr.head(1)
@@ -22,3 +24,24 @@ server_data.loc[crt_idx,"gld"] = 5124
 
 print(server_data.loc[crt_idx,"gld"])
 
+tester = (verbal_expression.
+            start_of_line().
+            find('[').
+            anything().
+            find(']').
+            anything().
+            end_of_line()
+)
+
+test1 = "[아카라이브] 병풍"
+test2 = "병풍"
+
+if tester.match(test1):
+    print(test1 + " is correct")
+else:
+    print(test1 + " is incorrect")
+    
+if tester.match(test2):
+    print(test2 + " is correct")
+else:
+    print(test2 + " is incorrect")

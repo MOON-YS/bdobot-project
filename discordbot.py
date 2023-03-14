@@ -11,7 +11,18 @@ from datetime import datetime
 from discord.ext import commands
 from pytz import timezone
 from discord.ext import tasks
+from verbalexpressions import VerEx
 
+verbal_expression = VerEx()
+
+nameTester = (verbal_expression.
+            start_of_line().
+            find('[').
+            anything().
+            find(']').
+            anything().
+            end_of_line()
+)
 
 PREFIX = os.environ['PREFIX']
 TOKEN = os.environ['TOKEN']
@@ -182,20 +193,17 @@ async def setNw(ctx, arg=None):
 @bot.command()
 async def 신청(ctx):
     
-    global gld_data
+    global gld_data, nameTester
     
     if not (gld_data["gld"]==ctx.message.guild.id).any():
         await ctx.channel.send(str(ctx.author.mention + "!init으로 초기화 해주세요"))
         return
     
-    val1 = '[' not in ctx.author.display_name
-    val2 = ']' not in ctx.author.display_name
-
-    val = val1 & val2
-
-    if val:
+    usrname = str(ctx.author.display_name)
+    if nameTester.match(usrname):
         await ctx.channel.send(str("잘못된 이름형식입니다. [길드]가문명 으로 서버닉네임을 변경해주세요"))
         return
+    
     crt_idx = gld_data.index[(gld_data['gld'] == ctx.message.guild.id)][0]
     crnt_num = gld_data.loc[crt_idx,"crnt_num"]
     full_num = gld_data.loc[crt_idx,"full_num"]
