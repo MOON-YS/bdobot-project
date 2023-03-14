@@ -179,15 +179,17 @@ async def setNw(ctx, arg=None):
     await ctx.channel.send(embed=embed)
     await ctx.message.delete()
     
-'''
+
 #need to be seperate
 @bot.command()
 async def 신청(ctx):
     
-    global crnt_num, crnt_usr, full_num, is_init, role_attend
-    if not is_init:
+    global gld_data
+    
+    if not (gld_data["gld"]==ctx.message.guild.id).any():
         await ctx.channel.send(str(ctx.author.mention + "!init으로 초기화 해주세요"))
         return
+    
     val1 = '[' not in ctx.author.display_name
     val2 = ']' not in ctx.author.display_name
 
@@ -196,6 +198,10 @@ async def 신청(ctx):
     if val:
         await ctx.channel.send(str("잘못된 이름형식입니다. [길드]가문명 으로 서버닉네임을 변경해주세요"))
         return
+    crt_idx = gld_data.index[(gld_data['gld'] == ctx.message.guild.id)][0]
+    crnt_num = gld_data.loc[crt_idx,"crnt_num"]
+    full_num = gld_data.loc[crt_idx,"full_num"]
+    crnt_usr = gld_data.loc[crt_idx,"crnt_usr"]
     
     if (full_num == 0):
         await ctx.channel.send(str(ctx.author.mention + " 금일 거점이 설정되지 않았습니다."))
@@ -216,14 +222,17 @@ async def 신청(ctx):
         await ctx.channel.send(str(ctx.author.mention + " 이미 참가한 유저입니다"))
         return
     
-    print(f"{ctx.author.id}_{usr_name} +  이(가) 참여했습니다.")
     crnt_usr.loc[crnt_num] = [usr_name, usr_gld, ctx.author.id]
     crnt_num = crnt_num+1
+    
+    gld_data.loc[crt_idx,"crnt_num"] = crnt_num 
+    gld_data.loc[crt_idx,"crnt_usr"] = crnt_usr 
+    role_attend = gld_data.loc[crt_idx,"role_attend"]
     
     await ctx.author.add_roles(role_attend)
     await ctx.channel.send(str(ctx.author.mention + f" 감사! {crnt_num}/{full_num}"))
     await ctx.message.delete()
-
+'''
 #need to be seperate
 @bot.command()
 async def 취소(ctx):
