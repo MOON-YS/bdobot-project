@@ -117,10 +117,12 @@ async def setTd(ctx):
     
     #reset yesterday data
     crt_idx = gld_data.index[(gld_data['gld'] == ctx.message.guild.id)][0]
+
+    tp = gld_data.loc[crt_idx,"crnt_usrs"] 
     
-    ct_usr = pd.DataFrame(columns=['name','guild','id'])
-    ct_usr.head(10)
-    gld_data.loc[crt_idx,"crnt_usrs"] = ct_usr
+    for l in range(0,tp):
+        tp.drop(l,axis=0,inplace = True)
+    
     gld_data.loc[crt_idx,"full_num"] = 0
     gld_data.loc[crt_idx,"crnt_num"] = 0
     gld_data.loc[crt_idx,"today_nw"] = 0
@@ -234,8 +236,6 @@ async def 신청(ctx):
     crnt_usr.loc[crnt_num] = [usr_name, usr_gld, ctx.author.id]
     crnt_num = crnt_num+1
     
-    gld_data.loc[crt_idx,"crnt_num"] = crnt_num 
-    gld_data.loc[crt_idx,"crnt_usrs"] = crnt_usr 
     role_attend = gld_data.loc[crt_idx,"role_attend"]
     
     await ctx.author.add_roles(role_attend)

@@ -13,32 +13,23 @@ server_data = pd.DataFrame(columns=['gld',
 server_data.head(1)
 
 
-server_data.loc[0] = [1234, False, False, 50,50, 12351, 1234,145, crnt_usr]
-server_data.loc[1] = [4567, False, False, 50,50, 12351,1234, 145, crnt_usr]
+server_data.loc[0] = [1234, False, False, 50,50, 12351, 1234,145, crnt_usr.copy()]
+server_data.loc[1] = [4567, False, False, 50,50, 12351,1234, 145, crnt_usr.copy()]
 crt_idx = server_data.index[(server_data['gld'] == 4567)][0]
+
 print(server_data.loc[crt_idx,"crnt_usrs"])
-server_data.loc[crt_idx,"gld"] = 5124
 
-print(server_data.loc[crt_idx,"gld"])
+server_data.loc[crt_idx,"crnt_usrs"].loc[0] = ["NAME","GUILD","ID"]
+server_data.loc[crt_idx,"crnt_usrs"].loc[1] = ["NAME","GUILD","ID"]
+server_data.loc[crt_idx,"crnt_usrs"].loc[2] = ["NAME","GUILD","ID"]
+server_data.loc[crt_idx,"crnt_usrs"].loc[3] = ["NAME","GUILD","ID"]
 
-tester = (verbal_expression.
-            start_of_line().
-            find('[').
-            anything().
-            find(']').
-            anything().
-            end_of_line()
-)
+print(server_data.loc[crt_idx]["crnt_usrs"])
 
-test1 = "[아카라이브] 병풍"
-test2 = "병풍"
+k = server_data.loc[crt_idx]["crnt_usrs"]
 
-if tester.match(test1):
-    print(test1 + " is correct")
-else:
-    print(test1 + " is incorrect")
-    
-if tester.match(test2):
-    print(test2 + " is correct")
-else:
-    print(test2 + " is incorrect")
+for l in range(0,len(k)):
+    k.drop(l, axis=0, inplace=True)
+
+print(server_data.loc[crt_idx]["crnt_usrs"])
+
