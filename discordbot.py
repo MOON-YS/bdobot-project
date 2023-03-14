@@ -224,7 +224,7 @@ async def 신청(ctx):
     usr_name = usr_name.replace(' ', '')
     usr_name = usr_name[usr_name.find(']')+1:]
     usr_gld = usr_gld[usr_gld.find('[')+1:usr_gld.find(']')]
-    
+    print(crnt_usr)
     if(crnt_usr['name']==usr_name).any():
         await ctx.channel.send(str(ctx.author.mention + " 이미 참가한 유저입니다"))
         return
