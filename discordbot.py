@@ -201,7 +201,7 @@ async def 신청(ctx):
     crt_idx = gld_data.index[(gld_data['gld'] == ctx.message.guild.id)][0]
     crnt_num = gld_data.loc[crt_idx,"crnt_num"]
     full_num = gld_data.loc[crt_idx,"full_num"]
-    crnt_usr = gld_data.loc[crt_idx,"crnt_usr"]
+    crnt_usr = gld_data.loc[crt_idx,"crnt_usrs"]
     
     if (full_num == 0):
         await ctx.channel.send(str(ctx.author.mention + " 금일 거점이 설정되지 않았습니다."))
@@ -226,12 +226,13 @@ async def 신청(ctx):
     crnt_num = crnt_num+1
     
     gld_data.loc[crt_idx,"crnt_num"] = crnt_num 
-    gld_data.loc[crt_idx,"crnt_usr"] = crnt_usr 
+    gld_data.loc[crt_idx,"crnt_usrs"] = crnt_usr 
     role_attend = gld_data.loc[crt_idx,"role_attend"]
     
     await ctx.author.add_roles(role_attend)
     await ctx.channel.send(str(ctx.author.mention + f" 감사! {crnt_num}/{full_num}"))
     await ctx.message.delete()
+    
 '''
 #need to be seperate
 @bot.command()
