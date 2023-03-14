@@ -455,16 +455,10 @@ every_day.start()
 @bot.command()
 async def dev(ctx):
     global gld_data
-    for guild in bot.guilds:
-        print("=========")
-        print(guild)
     
-    print("current = " + str(ctx.message.guild.id))
-    
-    print(gld_data)
     print("/=/=/=/=/=/=/=/=/=/=/=/=/=")
-    crt_gld = gld_data.loc[gld_data['gld'] == ctx.message.guild.id]
-    print(crt_gld)
+    crt_idx = gld_data.index[(gld_data['gld'] == ctx.message.guild.id)][0]
+    print(gld_data.loc[0,"crnt_usrs"])
     
 try:
     bot.run(TOKEN)
