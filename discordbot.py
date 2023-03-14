@@ -328,7 +328,7 @@ async def 정보(ctx):
         return
     
     today_nw = gld_data.loc[crt_idx,"today_nw"]
-    
+    print(today_nw)
     s = [""]
     s.append(getNwInfoStr(today_nw.iloc[0]))
     d = '```'+'\n'.join(s)+'```'
@@ -417,10 +417,6 @@ async def sayTest(ctx):
     
     await channel.send(f"{channel.name} Test done")
     
-
-
-    
-
 @tasks.loop(seconds=5)
 async def every_day():
     global cur_wd, pre_wd, channel, wd ,today_nw, today_nws, full_num, np_tdnw, crnt_num, crnt_usr
