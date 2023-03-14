@@ -82,9 +82,10 @@ async def init(ctx):
     await ctx.channel.send(str(ctx.author.mention + "초기화 완료."))
     channel = ctx.channel
     await channel.send(f"{channel.name} 에서 갱신합니다.")
+    print(str(ctx.message.guild.id)+" successfully Initialized")
     await ctx.message.delete()
     
-    
+'''
 #send today nord war list (1stage)
 #need to be seperate
 @bot.command()
@@ -127,7 +128,7 @@ async def setTd(ctx):
     await ctx.channel.send(embed=embed)
     await ctx.message.delete()
     
-'''
+''''''
 @bot.command()
 async def setNw(ctx, arg=None):
     global today_nw,today_nws, full_num, np_tdnw, is_init
