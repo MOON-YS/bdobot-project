@@ -131,10 +131,8 @@ async def setTd(ctx):
 
 @bot.command()
 async def setNw(ctx, arg=None):
-    global today_nw,today_nws, np_tdnw
-    
-    
-    
+    global today_nws, gld_data
+
     if not (gld_data["gld"]==ctx.message.guild.id).any():
         await ctx.channel.send(str(ctx.author.mention + "!init으로 초기화 해주세요"))
         return
