@@ -31,7 +31,7 @@ gld_data = pd.DataFrame(columns=['gld',
                                     'is_init','is_roleChecked', 
                                     'crnt_num', 'full_num',
                                     'update_ch','role_attend',
-                                    'td_info','crnt_usrs'])
+                                    'today_nw','crnt_usrs'])
 gld_data.head(10)
 
 
@@ -85,7 +85,7 @@ async def init(ctx):
     print(str(ctx.message.guild.id)+" successfully Initialized")
     await ctx.message.delete()
     
-'''
+
 #send today nord war list (1stage)
 #need to be seperate
 @bot.command()
@@ -103,6 +103,7 @@ async def setTd(ctx):
     if datetime.now(timezone('Asia/Seoul')).weekday() == 5:
         await ctx.channel.send("오늘은 거점전이 진행되지 않습니다.")
         return
+    
     crt_idx = gld_data.index[(gld_data['gld'] == ctx.message.guild.id)][0]
     
     gld_data.loc[crt_idx,"crnt_usrs"] = pd.DataFrame(columns=['name','guild','id'])
@@ -128,7 +129,7 @@ async def setTd(ctx):
     await ctx.channel.send(embed=embed)
     await ctx.message.delete()
     
-''''''
+'''
 @bot.command()
 async def setNw(ctx, arg=None):
     global today_nw,today_nws, full_num, np_tdnw, is_init

@@ -17,7 +17,8 @@ crnt_usr.loc[3]=["NAME4","GUILD",1234]
 server_data.loc[0] = [1234, False, False, 50,50, 12351, 1234,145, crnt_usr]
 server_data.loc[1] = [4567, False, False, 50,50, 12351,1234, 145, crnt_usr]
 crt_idx = server_data.index[(server_data['gld'] == 4567)][0]
-server_data.loc[crt_idx,"gld"] = 5124
 print(server_data.loc[crt_idx]["gld"])
+server_data.loc[crt_idx,"gld"] = 5124
+
 print(server_data.loc[crt_idx,"gld"])
 
