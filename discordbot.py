@@ -201,7 +201,7 @@ async def 신청(ctx):
     crt_idx = gld_data.index[(gld_data['gld'] == ctx.message.guild.id)][0]
     crnt_num = gld_data.loc[crt_idx,"crnt_num"]
     full_num = gld_data.loc[crt_idx,"full_num"]
-    crnt_usr = gld_data.loc[crt_idx,"crnt_usrs"]
+   
     
     if (full_num == 0):
         await ctx.channel.send(str(ctx.author.mention + " 금일 거점이 설정되지 않았습니다."))
@@ -211,7 +211,7 @@ async def 신청(ctx):
         await ctx.channel.send(str(ctx.author.mention + " 만원!"))
         return
     
-    
+    crnt_usr = gld_data.loc[crt_idx,"crnt_usrs"]
     usr_name = str(ctx.author.display_name)
     usr_gld = str(ctx.author.display_name)
     usr_name = usr_name.replace(' ', '')
