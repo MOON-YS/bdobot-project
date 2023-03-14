@@ -82,7 +82,6 @@ async def init(ctx):
     await ctx.channel.send(str(ctx.author.mention + "초기화 완료."))
     channel = ctx.channel
     await channel.send(f"{channel.name} 에서 갱신합니다.")
-    print(str(ctx.message.guild.id)+" successfully Initialized")
     await ctx.message.delete()
     
 
@@ -120,7 +119,6 @@ async def setTd(ctx):
         await usr.remove_roles(role_attend)
         
     #update today NWs
-    print(f"updated Today: {wd[datetime.now(timezone('Asia/Seoul')).weekday()]} ")
     s = [""]
     for i in range(0, today_nws['area'].count()):
         s.append("["+str(i+1)+"]\n")
@@ -130,12 +128,14 @@ async def setTd(ctx):
     await ctx.channel.send(embed=embed)
     await ctx.message.delete()
     
-'''
+
 @bot.command()
 async def setNw(ctx, arg=None):
-    global today_nw,today_nws, full_num, np_tdnw, is_init
+    global today_nw,today_nws, np_tdnw
     
-    if not is_init:
+    
+    
+    if not (gld_data["gld"]==ctx.message.guild.id).any():
         await ctx.channel.send(str(ctx.author.mention + "!init으로 초기화 해주세요"))
         return
     
@@ -152,20 +152,25 @@ async def setNw(ctx, arg=None):
         return
     
     if arg == None:
-        await ctx.channel.send("거점명을 입력하세요")
+        await ctx.channel.send("거점번호를 입력하세요")
         return
     
     if not int(arg) > 0:
         await ctx.channel.send(f"ERR")
         return
     
+    crt_idx = gld_data.index[(gld_data['gld'] == ctx.message.guild.id)][0]
     ag = int(arg) - 1
+    
     today_nws = today_nws.reset_index(inplace=False, drop=True)
+    
+    gld_data.loc[crt_idx,"today_nw"] = today_nws.loc[today_nws.index == ag]
     today_nw = today_nws.loc[today_nws.index == ag]
     td_area = today_nw.iloc[0]["area"]
+    
     await ctx.channel.send(content = "@everyone"+f" {td_area}이(가) 오늘의 거점전으로 설정되었습니다", allowed_mentions = discord.AllowedMentions(everyone = True))
     np_tdnw = today_nw.to_numpy()
-    full_num = int(np_tdnw[0][2])
+    gld_data.loc[crt_idx,"full_num"] = int(np_tdnw[0][2])
     
     s = [""]
     s.append(getNwInfoStr(today_nw.iloc[0]))
@@ -173,7 +178,8 @@ async def setNw(ctx, arg=None):
     embed = discord.Embed(title = '금일 거점 지역', description =d)
     await ctx.channel.send(embed=embed)
     await ctx.message.delete()
-
+    
+'''
 #need to be seperate
 @bot.command()
 async def 신청(ctx):
