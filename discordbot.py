@@ -426,11 +426,14 @@ every_day.start()
 
 @bot.command()
 async def dev(ctx):
+    global gld_data
     for guild in bot.guilds:
         print("=========")
         print(guild)
     
     print("current = " + str(ctx.message.guild.id))
+    
+    print(gld_data)
        
 try:
     bot.run(TOKEN)
