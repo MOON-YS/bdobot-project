@@ -42,18 +42,12 @@ role_attend = 0
 is_roleChecked = False
 is_init = False
 
-"""
-def roleCheck(ctx):
-    roleA = discord.utils.get(ctx.guild.role, name="아카라이브") in ctx.author.roles
-    roleV = discord.utils.get(ctx.guild.role, name="VESPER") in ctx.author.roles
-    if roleA | roleV:
-        return False
-    else: return True
-"""
 crnt_usr = pd.DataFrame(columns=['name','guild','id'])
 crnt_usr.head(10)
-@bot.command()
+#need to be seperate
 
+
+@bot.command()
 async def init(ctx):
     if not ctx.author.top_role.permissions.administrator:
         await ctx.channel.send(str(ctx.author.mention + "권한이 없습니다."))
@@ -84,6 +78,7 @@ async def init(ctx):
     
             
 #send today nord war list (1stage)
+#need to be seperate
 @bot.command()
 async def setTd(ctx):
     global wd ,today_nw, today_nws, full_num, np_tdnw, crnt_num, crnt_usr, is_roleChecked, role_attend, is_init
@@ -137,19 +132,19 @@ async def setNw(ctx, arg=None):
     
     if not ctx.author.top_role.permissions.administrator:
         await ctx.channel.send(str(ctx.author.mention + " 권한이 없습니다."))
-        return;
+        return
     
     if datetime.now(timezone('Asia/Seoul')).weekday() == 5:
         await ctx.channel.send("오늘은 거점전이 진행되지 않습니다.")
-        return;
+        return
     
     if today_nws['date'].iloc[0] != wd[datetime.now(timezone('Asia/Seoul')).weekday()]:     
         await ctx.channel.send("오늘의 거점전이 갱신되지 않았습니다. !setTd를 입력하세요")
-        return;
+        return
     
     if arg == None:
         await ctx.channel.send("거점명을 입력하세요")
-        return;
+        return
     
     if not int(arg) > 0:
         await ctx.channel.send(f"ERR")
@@ -169,7 +164,8 @@ async def setNw(ctx, arg=None):
     embed = discord.Embed(title = '금일 거점 지역', description =d)
     await ctx.channel.send(embed=embed)
     await ctx.message.delete()
-    
+
+#need to be seperate
 @bot.command()
 async def 신청(ctx):
     
@@ -213,88 +209,7 @@ async def 신청(ctx):
     await ctx.channel.send(str(ctx.author.mention + f" 감사! {crnt_num}/{full_num}"))
     await ctx.message.delete()
 
-@bot.command()
-async def 참여(ctx):
-    global crnt_num, crnt_usr, full_num, is_init, role_attend
-    if not is_init:
-        await ctx.channel.send(str(ctx.author.mention + "!init으로 초기화 해주세요"))
-        return
-    val1 = '[' not in ctx.author.display_name
-    val2 = ']' not in ctx.author.display_name
-
-    val = val1 & val2
-
-    if val:
-        await ctx.channel.send(str("잘못된 이름형식입니다. [길드]가문명 으로 서버닉네임을 변경해주세요"))
-        return
-    
-    if (full_num == 0):
-        await ctx.channel.send(str(ctx.author.mention + " 금일 거점이 설정되지 않았습니다."))
-        return
-    
-    if (crnt_num == full_num) :
-        await ctx.channel.send(str(ctx.author.mention + " 만원!"))
-        return
-    
-    usr_name = str(ctx.author.display_name)
-    usr_gld = str(ctx.author.display_name)
-    usr_name = usr_name.replace(' ', '')
-    usr_name = usr_name[usr_name.find(']')+1:]
-    usr_gld = usr_gld[usr_gld.find('[')+1:usr_gld.find(']')]
-    
-    if(crnt_usr['name']==usr_name).any():
-        await ctx.channel.send(str(ctx.author.mention + " 이미 참가한 유저입니다"))
-        return
-    
-    print(f"{ctx.author.id}_{usr_name} +  이(가) 참여했습니다.")
-    crnt_usr.loc[crnt_num] = [usr_name, usr_gld, ctx.author.id]
-    crnt_num = crnt_num+1
-    
-    await ctx.author.add_roles(role_attend)
-    await ctx.channel.send(str(ctx.author.mention + f" 감사! {crnt_num}/{full_num}"))
-    await ctx.message.delete()
-
-@bot.command()
-async def 참가(ctx):
-    global crnt_num, crnt_usr, full_num, is_init, role_attend
-    if not is_init:
-        await ctx.channel.send(str(ctx.author.mention + "!init으로 초기화 해주세요"))
-        return
-    val1 = '[' not in ctx.author.display_name
-    val2 = ']' not in ctx.author.display_name
-
-    val = val1 & val2
-
-    if val:
-        await ctx.channel.send(str("잘못된 이름형식입니다. [길드]가문명 으로 서버닉네임을 변경해주세요"))
-        return
-    
-    if (full_num == 0):
-        await ctx.channel.send(str(ctx.author.mention + " 금일 거점이 설정되지 않았습니다."))
-        return
-    
-    if (crnt_num == full_num) :
-        await ctx.channel.send(str(ctx.author.mention + " 만원!"))
-        return
-    
-    usr_name = str(ctx.author.display_name)
-    usr_gld = str(ctx.author.display_name)
-    usr_name = usr_name.replace(' ', '')
-    usr_name = usr_name[usr_name.find(']')+1:]
-    usr_gld = usr_gld[usr_gld.find('[')+1:usr_gld.find(']')]
-    
-    if(crnt_usr['name']==usr_name).any():
-        await ctx.channel.send(str(ctx.author.mention + " 이미 참가한 유저입니다"))
-        return
-    
-    print(f"{ctx.author.id}_{usr_name} +  이(가) 참여했습니다.")
-    crnt_usr.loc[crnt_num] = [usr_name, usr_gld, ctx.author.id]
-    crnt_num = crnt_num+1
-    
-    await ctx.author.add_roles(role_attend)
-    await ctx.channel.send(str(ctx.author.mention + f" 감사! {crnt_num}/{full_num}"))
-    await ctx.message.delete()
-
+#need to be seperate
 @bot.command()
 async def 취소(ctx):
     
@@ -329,6 +244,7 @@ async def 취소(ctx):
     await ctx.channel.send(str(ctx.author.mention + f" 잘가시지~ {crnt_num}/{full_num}"))
     await ctx.message.delete()
 
+#need to be seperate
 @bot.command()
 async def 참가자(ctx):
 
@@ -347,45 +263,8 @@ async def 참가자(ctx):
     embed = discord.Embed(title = '현재 참가자 리스트', description =d)
     await ctx.channel.send(embed=embed)
     await ctx.message.delete()
-    
-@bot.command()
-async def 참여자(ctx):
 
-    global crnt_usr,crnt_num,full_num, is_init
-    
-    if not is_init:
-        await ctx.channel.send(str(ctx.author.mention + "!init으로 초기화 해주세요"))
-        return
-    output = crnt_usr.to_numpy()
-    output = np.sort(output[:,0])
-    
-    s = [f'                    {crnt_num}/{full_num}                    ']
-    for data in output:
-        s.append(data)
-    d = '```'+'\n'.join(s)+'```'
-    embed = discord.Embed(title = '현재 참가자 리스트', description =d)
-    await ctx.channel.send(embed=embed)
-    await ctx.message.delete()
-
-@bot.command()
-async def 리스트(ctx):
-
-    global crnt_usr,crnt_num,full_num, is_init
-    
-    if not is_init:
-        await ctx.channel.send(str(ctx.author.mention + "!init으로 초기화 해주세요"))
-        return
-    output = crnt_usr.to_numpy()
-    output = np.sort(output[:,0])
-    
-    s = [f'                    {crnt_num}/{full_num}                    ']
-    for data in output:
-        s.append(data)
-    d = '```'+'\n'.join(s)+'```'
-    embed = discord.Embed(title = '현재 참가자 리스트', description =d)
-    await ctx.channel.send(embed=embed)
-    await ctx.message.delete()
-
+#need to be seperate
 @bot.command()
 async def 정보(ctx):
 
@@ -411,16 +290,16 @@ async def 명령어(ctx):
         return
     
     s = [""]
-    s.append("///////관리자용///////")
+    s.append("=====================관리자용======================")
     s.append("!setTd : 오늘자 거점전 초기화")
     s.append("!setNw 번호 : 오늘자 거점 지역 지정")
-    s.append("/////////////////////")
+    s.append("==================================================")
     s.append("!신청, !참여, !참가 : 오늘자 거점 참여 신청")
     s.append("!취소 : 오늘자 거점 참여 취소")
     s.append("!참가자, !참여자, !리스트 : 오늘자 거점 참여자 목록")
-    s.append("!드루와 : 보이스채널 미참가자 멘션")
+    s.append("!드루와 : 보이스채널(최상단 보이스채널) 미참가자 멘션")
     s.append("!정보 : 오늘자 거점 정보")
-    
+    s.append("===============Produced By 초량#5384===============")
     d = '```'+'\n'.join(s)+'```'
     embed = discord.Embed(title = '명령어 목록', description =d)
     await ctx.channel.send(embed=embed)
@@ -489,8 +368,13 @@ async def sayTest(ctx):
     
 @bot.command()
 async def dev(ctx):
-    global crnt_usr
-    print(crnt_usr)
+    for guild in bot.guilds:
+        print("=========")
+        print(guild)
+    
+    print("current = "+ctx.message.guild.id)
+
+    
 
 @tasks.loop(seconds=5)
 async def every_day():
