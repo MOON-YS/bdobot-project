@@ -35,7 +35,7 @@ bot = commands.Bot(command_prefix = '!',intents=discord.Intents.all())
 
 nw_data = pd.read_csv('./bdo_nw_data.csv',encoding='cp949')
 today_nws = nw_data[nw_data['date']=="일요일"].astype(str)
-today_nw = nw_data
+
 wd = {0:'월요일', 1:'화요일', 2:'수요일',3:'목요일',4:'금요일',5:'토요일', 6:'일요일'}
 
 gld_count = 0
@@ -54,7 +54,7 @@ async def on_ready():
     print("Bot is ready")
     await bot.change_presence(status=discord.Status.online, activity=discord.Game("v0.5b"))
 
-np_tdnw = 0
+
 cur_wd = -1
 pre_wd = -1
 
@@ -65,7 +65,7 @@ async def init(ctx):
     if not ctx.author.top_role.permissions.administrator:
         await ctx.channel.send(str(ctx.author.mention + "권한이 없습니다."))
         return
-    global wd ,today_nws, np_tdnw, gld_data, gld_count
+    global wd ,today_nws, gld_data, gld_count
     
     if((gld_data["gld"]==ctx.message.guild.id).any()):
         await ctx.channel.send(str(ctx.author.mention + "이미 초기화를 했습니다."))
@@ -118,7 +118,9 @@ async def setTd(ctx):
     #reset yesterday data
     crt_idx = gld_data.index[(gld_data['gld'] == ctx.message.guild.id)][0]
     
-    gld_data.loc[crt_idx,"crnt_usrs"] = pd.DataFrame(columns=['name','guild','id'])
+    ct_usr = pd.DataFrame(columns=['name','guild','id'])
+    ct_usr.head(10)
+    gld_data.loc[crt_idx,"crnt_usrs"] = ct_usr
     gld_data.loc[crt_idx,"full_num"] = 0
     gld_data.loc[crt_idx,"crnt_num"] = 0
     gld_data.loc[crt_idx,"today_nw"] = 0
