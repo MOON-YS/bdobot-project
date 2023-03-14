@@ -279,7 +279,7 @@ async def 취소(ctx):
     crnt_usr.drop(usr_n, axis=0, inplace=True)
     crnt_usr.reset_index(inplace=True, drop=True)
     crnt_num = crnt_num-1
-    
+    gld_data.loc[crt_idx,"crnt_num"] = crnt_num
     role_attend = gld_data.loc[crt_idx,"role_attend"]
     await ctx.author.remove_roles(role_attend)
     await ctx.channel.send(str(ctx.author.mention + f" 잘가시지~ {crnt_num}/{full_num}"))
