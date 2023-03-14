@@ -11,7 +11,7 @@ from datetime import datetime
 from discord.ext import commands
 from pytz import timezone
 from discord.ext import tasks
-import time
+
 
 PREFIX = os.environ['PREFIX']
 TOKEN = os.environ['TOKEN']
@@ -30,7 +30,7 @@ gld_count = 0
 gld_data = pd.DataFrame(columns=['gld',
                                     'is_init','is_roleChecked', 
                                     'crnt_num', 'full_num',
-                                    'update_ch','role_attend'
+                                    'update_ch','role_attend',
                                     'td_info','crnt_usrs'])
 gld_data.head(10)
 

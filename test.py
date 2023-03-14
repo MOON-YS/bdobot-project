@@ -6,7 +6,7 @@ crnt_usr.head(1)
 server_data = pd.DataFrame(columns=['gld',
                                     'is_init','is_roleChecked', 
                                     'crnt_num', 'full_num',
-                                    'update_ch',
+                                    'update_ch', 'role_attend',
                                     'td_info','crnt_usrs'])
 server_data.head(1)
 
