@@ -120,7 +120,7 @@ async def setTd(ctx):
 
     tp = gld_data.loc[crt_idx,"crnt_usrs"] 
     
-    for l in range(0,tp):
+    for l in range(0,len(tp)):
         tp.drop(l,axis=0,inplace = True)
     
     gld_data.loc[crt_idx,"full_num"] = 0
