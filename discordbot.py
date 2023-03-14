@@ -458,7 +458,7 @@ async def dev(ctx):
     
     print("/=/=/=/=/=/=/=/=/=/=/=/=/=")
     crt_idx = gld_data.index[(gld_data['gld'] == ctx.message.guild.id)][0]
-    print(gld_data.loc[0,"crnt_usrs"])
+    print(gld_data.loc[crt_idx,"crnt_usrs"])
     
 try:
     bot.run(TOKEN)
