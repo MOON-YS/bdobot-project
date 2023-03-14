@@ -102,15 +102,15 @@ async def setTd(ctx):
     if datetime.now(timezone('Asia/Seoul')).weekday() == 5:
         await ctx.channel.send("오늘은 거점전이 진행되지 않습니다.")
         return
-    crt_gld = gld_data.loc[gld_data['gld'] == ctx.message.guild.id]
+    crt_idx = gld_data.index[(gld_data['gld'] == ctx.message.guild.id)][0]
     
-    crt_gld["crnt_usrs"] = pd.DataFrame(columns=['name','guild','id'])
-    crt_gld["full_num"] = 0
-    crt_gld["crnt_num"] = 0
-    crt_gld["today_nw"] = 0
+    gld_data.loc[crt_idx,"crnt_usrs"] = pd.DataFrame(columns=['name','guild','id'])
+    gld_data.loc[crt_idx,"full_num"] = 0
+    gld_data.loc[crt_idx,"crnt_num"] = 0
+    gld_data.loc[crt_idx,"today_nw"] = 0
     today_nws = nw_data[nw_data['date']==wd[datetime.now(timezone('Asia/Seoul')).weekday()]].astype(str)
     
-    role_attend = crt_gld["role_attend"]
+    role_attend = gld_data.loc[crt_idx,"role_attend"]
     attends = role_attend.members
     
     for usr in attends:
