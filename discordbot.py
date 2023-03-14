@@ -285,18 +285,22 @@ async def 취소(ctx):
     await ctx.channel.send(str(ctx.author.mention + f" 잘가시지~ {crnt_num}/{full_num}"))
     await ctx.message.delete()
     
-'''
+
 #need to be seperate
 @bot.command()
 async def 참가자(ctx):
 
-    global crnt_usr,crnt_num,full_num, is_init
-    
-    if not is_init:
+    global gld_data
+    crt_idx = gld_data.index[(gld_data['gld'] == ctx.message.guild.id)][0]
+    if not (gld_data["gld"]==ctx.message.guild.id).any():
         await ctx.channel.send(str(ctx.author.mention + "!init으로 초기화 해주세요"))
         return
+    
+    crnt_usr = gld_data.loc[crt_idx,"crnt_usrs"]
     output = crnt_usr.to_numpy()
     output = np.sort(output[:,0])
+    crnt_num = gld_data.loc[crt_idx,"crnt_num"]
+    full_num = gld_data.loc[crt_idx,"full_num"]
     
     s = [f'                    {crnt_num}/{full_num}                    ']
     for data in output:
@@ -310,13 +314,20 @@ async def 참가자(ctx):
 @bot.command()
 async def 정보(ctx):
 
-    global today_nw, full_num, is_init
-    if not is_init:
+    global gld_data
+    
+    crt_idx = gld_data.index[(gld_data['gld'] == ctx.message.guild.id)][0]
+    
+    if not (gld_data["gld"]==ctx.message.guild.id).any():
         await ctx.channel.send(str(ctx.author.mention + "!init으로 초기화 해주세요"))
         return
+    
+    full_num = gld_data.loc[crt_idx,"full_num"]
     if full_num == 0:
         await ctx.channel.send("금일 거점이 설정되지 않았습니다")
         return
+    
+    today_nw = gld_data.loc[crt_idx,"today_nw"]
     
     s = [""]
     s.append(getNwInfoStr(today_nw.iloc[0]))
@@ -327,12 +338,10 @@ async def 정보(ctx):
 
 @bot.command()
 async def 명령어(ctx):
-    if not is_init:
-        await ctx.channel.send(str(ctx.author.mention + "!init으로 초기화 해주세요"))
-        return
-    
+
     s = [""]
     s.append("=====================관리자용======================")
+    s.append("!init : 전체 초기세팅(1회만 실행)")
     s.append("!setTd : 오늘자 거점전 초기화")
     s.append("!setNw 번호 : 오늘자 거점 지역 지정")
     s.append("==================================================")
@@ -346,7 +355,7 @@ async def 명령어(ctx):
     embed = discord.Embed(title = '명령어 목록', description =d)
     await ctx.channel.send(embed=embed)
     await ctx.message.delete()
-
+'''
 @bot.command()
 async def 드루와(ctx):
     vch = 0
