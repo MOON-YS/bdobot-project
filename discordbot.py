@@ -235,7 +235,7 @@ async def 신청(ctx):
     
     crnt_usr.loc[crnt_num] = [usr_name, usr_gld, ctx.author.id]
     crnt_num = crnt_num+1
-    
+    gld_data.loc[crt_idx,"crnt_num"] = crnt_num
     role_attend = gld_data.loc[crt_idx,"role_attend"]
     
     await ctx.author.add_roles(role_attend)
@@ -284,6 +284,7 @@ async def 취소(ctx):
     await ctx.author.remove_roles(role_attend)
     await ctx.channel.send(str(ctx.author.mention + f" 잘가시지~ {crnt_num}/{full_num}"))
     await ctx.message.delete()
+    
 '''
 #need to be seperate
 @bot.command()
