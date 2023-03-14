@@ -84,7 +84,7 @@ async def init(ctx):
     await channel.send(f"{channel.name} 에서 갱신합니다.")
     await ctx.message.delete()
     
-'''     
+    
 #send today nord war list (1stage)
 #need to be seperate
 @bot.command()
@@ -102,14 +102,15 @@ async def setTd(ctx):
     if datetime.now(timezone('Asia/Seoul')).weekday() == 5:
         await ctx.channel.send("오늘은 거점전이 진행되지 않습니다.")
         return
+    crt_gld = gld_data.loc[gld_data['gld'] == ctx.message.guild.id]
     
-    crnt_usr = pd.DataFrame(columns=['name','guild','id'])
-    full_num = 0
-    np_tdnw = 0
-    crnt_num = 0
-    today_nw = 0
+    crt_gld["crnt_usrs"] = pd.DataFrame(columns=['name','guild','id'])
+    crt_gld["full_num"] = 0
+    crt_gld["crnt_num"] = 0
+    crt_gld["today_nw"] = 0
     today_nws = nw_data[nw_data['date']==wd[datetime.now(timezone('Asia/Seoul')).weekday()]].astype(str)
     
+    role_attend = crt_gld["role_attend"]
     attends = role_attend.members
     
     for usr in attends:
@@ -125,7 +126,8 @@ async def setTd(ctx):
     embed = discord.Embed(title = '금일 거점 진행 지역 리스트', description =d)
     await ctx.channel.send(embed=embed)
     await ctx.message.delete()
-
+    
+'''
 @bot.command()
 async def setNw(ctx, arg=None):
     global today_nw,today_nws, full_num, np_tdnw, is_init
@@ -437,7 +439,7 @@ async def dev(ctx):
     print("/=/=/=/=/=/=/=/=/=/=/=/=/=")
     crt_gld = gld_data.loc[gld_data['gld'] == ctx.message.guild.id]
     print(crt_gld)
-       
+    
 try:
     bot.run(TOKEN)
 except discord.errors.LoginFailure as e:
