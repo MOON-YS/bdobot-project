@@ -53,7 +53,7 @@ async def init(ctx):
     if not ctx.author.top_role.permissions.administrator:
         await ctx.channel.send(str(ctx.author.mention + "권한이 없습니다."))
         return
-    global wd ,today_nw, today_nws, full_num, np_tdnw, role_attend, channel, gld_data, gld_count
+    global wd ,today_nws, np_tdnw, gld_data, gld_count
     
     if((gld_data["gld"]==ctx.message.guild.id).any()):
         await ctx.channel.send(str(ctx.author.mention + "이미 초기화를 했습니다."))
@@ -78,7 +78,7 @@ async def init(ctx):
     crnt_usr.head(10)
  
     gld_data.loc[gld_count] = [ctx.message.guild.id, True, True, 0, 0, ctx.message.channel.id, role_attend, 0, crnt_usr]
-    gld_count += 1
+    gld_count = gld_count + 1
     await ctx.channel.send(str(ctx.author.mention + "초기화 완료."))
     channel = ctx.channel
     await channel.send(f"{channel.name} 에서 갱신합니다.")
