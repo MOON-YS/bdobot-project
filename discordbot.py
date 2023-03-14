@@ -372,7 +372,7 @@ async def dev(ctx):
         print("=========")
         print(guild)
     
-    print("current = "+ctx.message.guild.id)
+    print("current = " + str(ctx.message.guild.id))
 
     
 
