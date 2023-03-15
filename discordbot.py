@@ -178,8 +178,9 @@ async def setNw(ctx, arg=None):
     
     today_nws = today_nws.reset_index(inplace=False, drop=True)
     
-    gld_data.loc[crt_idx,"today_nw"] = today_nws.loc[today_nws.index == ag]
-    today_nw = today_nws.loc[today_nws.index == ag]
+    td_nw = gld_data.loc[crt_idx,"today_nw"]
+    td_nw.loc[0] = today_nws.loc[today_nws.index == ag]
+    today_nw = today_nws.loc[today_nws.index == ag] 
     td_area = today_nw.iloc[0]["area"]
     
     await ctx.channel.send(content = "@everyone"+f" {td_area}이(가) 오늘의 거점전으로 설정되었습니다", allowed_mentions = discord.AllowedMentions(everyone = True))
