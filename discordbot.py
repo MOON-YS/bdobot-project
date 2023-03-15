@@ -88,7 +88,7 @@ async def init(ctx):
     
     crnt_usr = pd.DataFrame(columns=['name','guild','id'])
     crnt_usr.head(10)
-    tdnw = pd.DataFrame(columns=['area','date','num','stage','er'])
+    tdnw = pd.DataFrame(columns=['area','date','num','stage','ter'])
     tdnw.head(10)
     gld_data.loc[gld_count] = [ctx.message.guild.id, True, True, 0, 0, ctx.message.channel.id, role_attend, tdnw.copy(), crnt_usr.copy()]
     gld_count = gld_count + 1
@@ -192,7 +192,7 @@ async def setNw(ctx, arg=None):
     await ctx.channel.send(content = "@everyone"+f" {td_area}이(가) 오늘의 거점전으로 설정되었습니다", allowed_mentions = discord.AllowedMentions(everyone = True))
     np_tdnw = today_nw.to_numpy()
     gld_data.loc[crt_idx,"full_num"] = int(np_tdnw[0][2])
-    gld_data.loc[crt_idx,"today_nw"].loc[0] = [str(today_nw.iloc[0]["area"]),str(today_nw.iloc[0]["date"]),today_nw.iloc[0]["full_num"],str(today_nw.iloc[0]["stage"]),str(today_nw.iloc[0]["ter"])]
+    gld_data.loc[crt_idx,"today_nw"].loc[0] = [str(today_nw.iloc[0]["area"]),str(today_nw.iloc[0]["date"]),today_nw.iloc[0]["num"],str(today_nw.iloc[0]["stage"]),str(today_nw.iloc[0]["ter"])]
     s = [""]
     s.append(getNwInfoStr(today_nw.iloc[0]))
     d = '```'+'\n'.join(s)+'```'
