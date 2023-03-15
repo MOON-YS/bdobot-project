@@ -28,11 +28,6 @@ print(server_data.loc[crt_idx]["crnt_usrs"])
 
 k = server_data.loc[crt_idx]["crnt_usrs"]
 
-for l in range(0,len(k)):
-    k.drop(l, axis=0, inplace=True)
+print(len(server_data.loc[crt_idx]["crnt_usrs"]))
 
-
-server_data.loc[crt_idx,"crnt_usrs"] = pd.DataFrame(crnt_usr.loc[0])
-print(crnt_usr)
-print(server_data.loc[crt_idx]["crnt_usrs"])
 

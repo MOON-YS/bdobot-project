@@ -12,6 +12,7 @@ from discord.ext import commands
 from pytz import timezone
 from discord.ext import tasks
 from verbalexpressions import VerEx
+import time
 
 
 verbal_expression = VerEx()
@@ -112,7 +113,7 @@ async def setTd(ctx):
         return
     
     if datetime.now(timezone('Asia/Seoul')).weekday() == 5:
-        await ctx.channel.send("오늘은 거점전이 진행되지 않습니다.")
+        await ctx.channel.send(str(ctx.author.mention + "오늘은 거점전이 진행되지 않습니다."))
         return
     
     #reset yesterday data
@@ -132,15 +133,23 @@ async def setTd(ctx):
     gld_data.loc[crt_idx,"full_num"] = 0
     gld_data.loc[crt_idx,"crnt_num"] = 0
     
-    today_nws = nw_data[nw_data['date']==wd[datetime.now(timezone('Asia/Seoul')).weekday()]].astype(str)
-    
     role_attend = gld_data.loc[crt_idx,"role_attend"]
     attends = role_attend.members
     
     for usr in attends:
         await usr.remove_roles(role_attend)
         
+    print(today_nws.loc[0]['date'])
+    print(type(today_nws.loc[0]['date']))
+    print(wd[datetime.now(timezone('Asia/Seoul')).weekday()])
+    print(type(wd[datetime.now(timezone('Asia/Seoul')).weekday()]))
+    
     #update today NWs
+    if today_nws.loc[0]['date'] != wd[datetime.now(timezone('Asia/Seoul')).weekday()]:
+        today_nws = nw_data[nw_data['date']==wd[datetime.now(timezone('Asia/Seoul')).weekday()]].astype(str)
+    
+    
+    
     s = [""]
     for i in range(0, today_nws['area'].count()):
         s.append("["+str(i+1)+"]\n")
@@ -164,19 +173,19 @@ async def setNw(ctx, arg=None):
         return
     
     if datetime.now(timezone('Asia/Seoul')).weekday() == 5:
-        await ctx.channel.send("오늘은 거점전이 진행되지 않습니다.")
+        await ctx.channel.send(str(ctx.author.mention +" 오늘은 거점전이 진행되지 않습니다."))
         return
     
     if today_nws['date'].iloc[0] != wd[datetime.now(timezone('Asia/Seoul')).weekday()]:     
-        await ctx.channel.send("오늘의 거점전이 갱신되지 않았습니다. !setTd를 입력하세요")
+        await ctx.channel.send(str(ctx.author.mention +" 오늘의 거점전이 갱신되지 않았습니다. !setTd를 입력하세요"))
         return
     
     if arg == None:
-        await ctx.channel.send("거점번호를 입력하세요")
+        await ctx.channel.send(str(ctx.author.mention +" 거점번호를 입력하세요"))
         return
     
-    if not int(arg) > 0:
-        await ctx.channel.send(f"ERR")
+    if (int(arg) < 1)|(int(arg)> len(today_nws)):
+        await ctx.channel.send(str(ctx.author.mention +" 적절한 번호를 입력해주세요"))
         return
     
     
@@ -198,7 +207,7 @@ async def setNw(ctx, arg=None):
     
     td_area = today_nw.iloc[0]["area"]
     
-    await ctx.channel.send(content = "@everyone"+f"참가자 초기화 및 {td_area}이(가) 오늘의 거점전으로 설정되었습니다.", allowed_mentions = discord.AllowedMentions(everyone = True))
+    await ctx.channel.send(content = "@everyone"+f" 참가자 초기화 및 {td_area}이(가) 오늘의 거점전으로 설정되었습니다.", allowed_mentions = discord.AllowedMentions(everyone = True))
     np_tdnw = today_nw.to_numpy()
     gld_data.loc[crt_idx,"full_num"] = int(np_tdnw[0][2])
     gld_data.loc[crt_idx,"today_nw"].loc[0] = [str(today_nw.iloc[0]["area"]),str(today_nw.iloc[0]["date"]),today_nw.iloc[0]["num"],str(today_nw.iloc[0]["stage"]),str(today_nw.iloc[0]["ter"])]
@@ -222,7 +231,7 @@ async def 신청(ctx):
     
     usrname = str(ctx.author.display_name)
     if not nameTester.match(usrname):
-        await ctx.channel.send(str("잘못된 이름형식입니다. [길드]가문명 으로 서버닉네임을 변경해주세요"))
+        await ctx.channel.send(str(ctx.author.mention +" 잘못된 이름형식입니다. [길드]가문명 으로 서버닉네임을 변경해주세요"))
         return
     
     crt_idx = gld_data.index[(gld_data['gld'] == ctx.message.guild.id)][0]
@@ -375,8 +384,6 @@ async def 명령어(ctx):
 @bot.command()
 async def 드루와(ctx):
     
-    
-    
     vch = 0
     not_in = []
     global gld_data
@@ -443,7 +450,8 @@ async def sayTest(ctx):
         return
     
     await channel.send(f"{channel.name} Test done")
-    
+'''
+'''
 @tasks.loop(seconds=5)
 async def every_day():
     global cur_wd, pre_wd, channel, wd ,today_nw, today_nws, full_num, np_tdnw, crnt_num, crnt_usr
@@ -453,47 +461,31 @@ async def every_day():
     
     if pre_wd !=  cur_wd:
         print(f"dayChanged : {datetime.now(timezone('Asia/Seoul'))}")
-        if channel != 0:
-            await channel.send(f"금일 거점전 자동 초기화 :  {datetime.now(timezone('Asia/Seoul'))}")
-
+        
+        
+        for servers in bot.guilds:
+            if not (gld_data["gld"]==servers.id).any():
+                return
+            
+            idx = gld_data.index[(gld_data['gld'] == servers.id)][0]
+            channel = bot.get_channel(gld_data.loc[idx,"update_ch"])
+            
+            #reset data
+            
             crnt_usr = pd.DataFrame(columns=['name','guild','id'])
-            full_num = 0
-            np_tdnw = 0
-            crnt_num = 0
-            today_nw = 0
-            today_nws = nw_data[nw_data['date']==wd[datetime.now(timezone('Asia/Seoul')).weekday()]].astype(str)
-
-            s = [""]
-            for i in range(0, today_nws['area'].count()):
-                s.append("["+str(i+1)+"]\n")
-                s.append(getNwInfoStr(today_nws.iloc[i]) + "\n--------------")
-            d = '```'+'\n'.join(s)+'```'
-            embed = discord.Embed(title = '금일 1단 거점 진행 지역 리스트', description =d)
+            crnt_usr.head(10)
+            tdnw = pd.DataFrame(columns=['area','date','num','stage','ter'])
+            tdnw.head(10)
             
-            attends = role_attend.members
-            for usr in attends:
-                await usr.remove_roles(role_attend)
             
-            if(len(today_nws) == 1):
-                today_nw = today_nws.iloc[0]
-                tp_nwName = today_nw['area'].str
-                await channel.send(content = "@everyone"+f" {tp_nwName} 이(가) 오늘의 거점전으로 자동 설정되었습니다", allowed_mentions = discord.AllowedMentions(everyone = True))
-                np_tdnw = today_nw.to_numpy()
-                full_num = int(np_tdnw[0][2])
-    
-                s = [""]
-                s.append(getNwInfoStr(today_nw.iloc[0]))
-                d = '```'+'\n'.join(s)+'```'
-                embed = discord.Embed(title = '금일 거점 지역', description =d)
-                await channel.send(embed=embed)
+            #reset data end
             
-            await channel.send(embed=embed)
+            await channel.send(f"금일 거점전 자동 초기화 :  {datetime.now(timezone('Asia/Seoul'))}")
             
             time.sleep(1)
     
 every_day.start() 
-'''   
-
+'''
 @bot.command()
 async def dev(ctx):
     global gld_data
