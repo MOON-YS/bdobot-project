@@ -139,14 +139,12 @@ async def setTd(ctx):
     for usr in attends:
         await usr.remove_roles(role_attend)
         
-    print(today_nws.loc[0]['date'])
-    print(type(today_nws.loc[0]['date']))
-    print(wd[datetime.now(timezone('Asia/Seoul')).weekday()])
-    print(type(wd[datetime.now(timezone('Asia/Seoul')).weekday()]))
+    print(today_nws['date'])
+
     
-    #update today NWs
-    if today_nws.loc[0]['date'] != wd[datetime.now(timezone('Asia/Seoul')).weekday()]:
-        today_nws = nw_data[nw_data['date']==wd[datetime.now(timezone('Asia/Seoul')).weekday()]].astype(str)
+    #update today NWs once
+
+    today_nws = nw_data[nw_data['date']==wd[datetime.now(timezone('Asia/Seoul')).weekday()]].astype(str)
     
     
     
