@@ -75,7 +75,6 @@ async def init(ctx):
     
     if not is_roleChecked:
         for i in range(len(ctx.guild.roles)):
-            print(ctx.guild.roles[i].name)
             if(ctx.guild.roles[i].name == "참여자"):
                 role_attend = ctx.guild.roles[i]
                 is_roleChecked = True
@@ -235,7 +234,7 @@ async def 신청(ctx):
     usr_name = usr_name.replace(' ', '')
     usr_name = usr_name[usr_name.find(']')+1:]
     usr_gld = usr_gld[usr_gld.find('[')+1:usr_gld.find(']')]
-    print(crnt_usr)
+
     if(crnt_usr['name']==usr_name).any():
         await ctx.channel.send(str(ctx.author.mention + " 이미 참가한 유저입니다"))
         return
@@ -335,7 +334,7 @@ async def 정보(ctx):
         return
     
     today_nw = gld_data.loc[crt_idx,"today_nw"]
-    print(today_nw)
+
     s = [""]
     s.append(getNwInfoStr(today_nw.iloc[0]))
     d = '```'+'\n'.join(s)+'```'
@@ -362,17 +361,28 @@ async def 명령어(ctx):
     embed = discord.Embed(title = '명령어 목록', description =d)
     await ctx.channel.send(embed=embed)
     await ctx.message.delete()
-'''
+
 @bot.command()
 async def 드루와(ctx):
+    
+    
+    
     vch = 0
     not_in = []
-    global crnt_usr
-    for server in bot.guilds:
-        for ch in server.channels:
-            if str(ch.type) == 'voice':
-                vch = ch
-                break
+    global gld_data
+    
+    if not (gld_data["gld"]==ctx.message.guild.id).any():
+        await ctx.channel.send(str(ctx.author.mention + "!init으로 초기화 해주세요"))
+        return
+    
+    crt_idx = gld_data.index[(gld_data['gld'] == ctx.message.guild.id)][0]
+    
+    crnt_usr = gld_data.loc[crt_idx,"crnt_usrs"]
+    gld = ctx.message.guild
+    for ch in gld.channels:
+        if str(ch.type) == 'voice':
+            vch = ch
+            break
 
     for i in range(0, len(crnt_usr)):
         is_found = False
@@ -399,7 +409,7 @@ async def 드루와(ctx):
     await ctx.message.delete()
     
     
-    
+'''
 @bot.command()
 async def sayHere(ctx):
     global channel
