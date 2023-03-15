@@ -178,9 +178,8 @@ async def setNw(ctx, arg=None):
     
     today_nws = today_nws.reset_index(inplace=False, drop=True)
     
-    td_nw = gld_data.loc[crt_idx,"today_nw"]
-    td_nw.loc[0] = today_nws.loc[today_nws.index == ag]
-    today_nw = today_nws.loc[today_nws.index == ag] 
+    gld_data.loc[crt_idx,"today_nw"] = today_nws.loc[today_nws.index == ag]
+    today_nw = today_nws.loc[today_nws.index == ag]
     td_area = today_nw.iloc[0]["area"]
     
     await ctx.channel.send(content = "@everyone"+f" {td_area}이(가) 오늘의 거점전으로 설정되었습니다", allowed_mentions = discord.AllowedMentions(everyone = True))
@@ -331,7 +330,7 @@ async def 정보(ctx):
     today_nw = gld_data.loc[crt_idx,"today_nw"]
     print(today_nw)
     s = [""]
-    s.append("test")
+    s.append(getNwInfoStr(today_nw.iloc[0]))
     d = '```'+'\n'.join(s)+'```'
     embed = discord.Embed(title = '금일 거점 지역', description =d)
     await ctx.channel.send(embed=embed)
@@ -474,7 +473,8 @@ async def dev(ctx):
     
     print("/=/=/=/=/=/=/=/=/=/=/=/=/=")
     crt_idx = gld_data.index[(gld_data['gld'] == ctx.message.guild.id)][0]
-    print(gld_data.loc[crt_idx,"crnt_usrs"])
+    print(gld_data.loc[crt_idx,"today_nw"])
+    print("/=/=/=/=/=/=/=/=/=/=/=/=/=")
     
 try:
     bot.run(TOKEN)
