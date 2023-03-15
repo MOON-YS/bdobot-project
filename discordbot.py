@@ -179,6 +179,16 @@ async def setNw(ctx, arg=None):
         await ctx.channel.send(f"ERR")
         return
     
+    tp = gld_data.loc[crt_idx,"crnt_usrs"] 
+    
+    for l in range(0,len(tp)):
+        tp.drop(l,axis=0,inplace = True)
+    
+    tdn = gld_data.loc[crt_idx,"today_nw"]
+    
+    for l in range(0,len(tdn)):
+        tdn.drop(l,axis=0,inplace = True)
+    
     crt_idx = gld_data.index[(gld_data['gld'] == ctx.message.guild.id)][0]
     ag = int(arg) - 1
     
@@ -188,7 +198,7 @@ async def setNw(ctx, arg=None):
     
     td_area = today_nw.iloc[0]["area"]
     
-    await ctx.channel.send(content = "@everyone"+f" {td_area}이(가) 오늘의 거점전으로 설정되었습니다", allowed_mentions = discord.AllowedMentions(everyone = True))
+    await ctx.channel.send(content = "@everyone"+f"참가자 초기화 및 {td_area}이(가) 오늘의 거점전으로 설정되었습니다.", allowed_mentions = discord.AllowedMentions(everyone = True))
     np_tdnw = today_nw.to_numpy()
     gld_data.loc[crt_idx,"full_num"] = int(np_tdnw[0][2])
     gld_data.loc[crt_idx,"today_nw"].loc[0] = [str(today_nw.iloc[0]["area"]),str(today_nw.iloc[0]["date"]),today_nw.iloc[0]["num"],str(today_nw.iloc[0]["stage"]),str(today_nw.iloc[0]["ter"])]
@@ -452,7 +462,7 @@ async def every_day():
             crnt_num = 0
             today_nw = 0
             today_nws = nw_data[nw_data['date']==wd[datetime.now(timezone('Asia/Seoul')).weekday()]].astype(str)
-            print(f"updated Today: {wd[datetime.now(timezone('Asia/Seoul')).weekday()]} ")
+
             s = [""]
             for i in range(0, today_nws['area'].count()):
                 s.append("["+str(i+1)+"]\n")
