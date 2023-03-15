@@ -179,6 +179,10 @@ async def setNw(ctx, arg=None):
         await ctx.channel.send(f"ERR")
         return
     
+    
+    
+    crt_idx = gld_data.index[(gld_data['gld'] == ctx.message.guild.id)][0]
+    ag = int(arg) - 1
     tp = gld_data.loc[crt_idx,"crnt_usrs"] 
     
     for l in range(0,len(tp)):
@@ -188,10 +192,6 @@ async def setNw(ctx, arg=None):
     
     for l in range(0,len(tdn)):
         tdn.drop(l,axis=0,inplace = True)
-    
-    crt_idx = gld_data.index[(gld_data['gld'] == ctx.message.guild.id)][0]
-    ag = int(arg) - 1
-    
     today_nws = today_nws.reset_index(inplace=False, drop=True)
     
     today_nw = today_nws.loc[today_nws.index == ag]
