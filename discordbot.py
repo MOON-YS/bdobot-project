@@ -330,7 +330,7 @@ async def 정보(ctx):
     today_nw = gld_data.loc[crt_idx,"today_nw"]
     print(today_nw)
     s = [""]
-    s.append(getNwInfoStr(today_nw.iloc[0]))
+    s.append("test")
     d = '```'+'\n'.join(s)+'```'
     embed = discord.Embed(title = '금일 거점 지역', description =d)
     await ctx.channel.send(embed=embed)
