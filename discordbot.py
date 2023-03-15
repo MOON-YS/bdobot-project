@@ -88,8 +88,9 @@ async def init(ctx):
     
     crnt_usr = pd.DataFrame(columns=['name','guild','id'])
     crnt_usr.head(10)
- 
-    gld_data.loc[gld_count] = [ctx.message.guild.id, True, True, 0, 0, ctx.message.channel.id, role_attend, 0, crnt_usr]
+    tdnw = pd.DataFrame(columns=['area','date','num','stage','er'])
+    tdnw.head(10)
+    gld_data.loc[gld_count] = [ctx.message.guild.id, True, True, 0, 0, ctx.message.channel.id, role_attend, tdnw.copy(), crnt_usr.copy()]
     gld_count = gld_count + 1
     await ctx.channel.send(str(ctx.author.mention + "초기화 완료."))
     channel = ctx.channel
@@ -123,9 +124,15 @@ async def setTd(ctx):
     for l in range(0,len(tp)):
         tp.drop(l,axis=0,inplace = True)
     
+    tdn = gld_data.loc[crt_idx,"today_nw"]
+    
+    for l in range(0,len(tdn)):
+        tdn.drop(l,axis=0,inplace = True)
+    
+    
     gld_data.loc[crt_idx,"full_num"] = 0
     gld_data.loc[crt_idx,"crnt_num"] = 0
-    gld_data.loc[crt_idx,"today_nw"] = 0
+    
     today_nws = nw_data[nw_data['date']==wd[datetime.now(timezone('Asia/Seoul')).weekday()]].astype(str)
     
     role_attend = gld_data.loc[crt_idx,"role_attend"]
@@ -178,14 +185,14 @@ async def setNw(ctx, arg=None):
     
     today_nws = today_nws.reset_index(inplace=False, drop=True)
     
-    gld_data.loc[crt_idx,"today_nw"] = today_nws.loc[today_nws.index == ag]
     today_nw = today_nws.loc[today_nws.index == ag]
+    
     td_area = today_nw.iloc[0]["area"]
     
     await ctx.channel.send(content = "@everyone"+f" {td_area}이(가) 오늘의 거점전으로 설정되었습니다", allowed_mentions = discord.AllowedMentions(everyone = True))
     np_tdnw = today_nw.to_numpy()
     gld_data.loc[crt_idx,"full_num"] = int(np_tdnw[0][2])
-    
+    gld_data.loc[crt_idx,"today_nw"].loc[0] = [str(today_nw.iloc[0]["area"]),str(today_nw.iloc[0]["date"]),today_nw.iloc[0]["full_num"],str(today_nw.iloc[0]["stage"]),str(today_nw.iloc[0]["ter"])]
     s = [""]
     s.append(getNwInfoStr(today_nw.iloc[0]))
     d = '```'+'\n'.join(s)+'```'
