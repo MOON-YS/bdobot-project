@@ -491,7 +491,10 @@ async def dev(ctx):
     crt_idx = gld_data.index[(gld_data['gld'] == ctx.message.guild.id)][0]
     print(gld_data.loc[crt_idx,"today_nw"])
     print("/=/=/=/=/=/=/=/=/=/=/=/=/=")
-    
+
+@bot.slash_command(description="Hello World 출력하기") # 슬래시 커맨드 등록
+async def helloworld(ctx): # 슬래시 커맨드 이름
+    await ctx.respond("Hello World!", ephemeral=True) # 인터렉션 응답; ephemeral = True
 
 try:
     bot.run(TOKEN)
