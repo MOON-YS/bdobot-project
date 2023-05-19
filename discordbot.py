@@ -486,7 +486,7 @@ every_day.start()
 @bot.command()
 async def dev(ctx):
     global gld_data
-    await ctx.channel.send("ctx", ephemeral=True)
+    await ctx.respond("ctx", ephemeral=True)
     print("/=/=/=/=/=/=/=/=/=/=/=/=/=")
     crt_idx = gld_data.index[(gld_data['gld'] == ctx.message.guild.id)][0]
     print(gld_data.loc[crt_idx,"today_nw"])
