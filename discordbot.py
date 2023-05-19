@@ -14,7 +14,6 @@ from discord.ext import tasks
 from verbalexpressions import VerEx
 import time
 
-
 verbal_expression = VerEx()
 
 nameTester = (verbal_expression.
