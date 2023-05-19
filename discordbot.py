@@ -486,7 +486,6 @@ every_day.start()
 @bot.command()
 async def dev(ctx):
     global gld_data
-    await discord.interaction.response.send_message("interaction", ephemeral=True)
     await ctx.channel.send("ctx", ephemeral=True)
     print("/=/=/=/=/=/=/=/=/=/=/=/=/=")
     crt_idx = gld_data.index[(gld_data['gld'] == ctx.message.guild.id)][0]
