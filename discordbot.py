@@ -487,14 +487,13 @@ every_day.start()
 async def dev(ctx):
     global gld_data
     await discord.interaction.response.send_message("interaction", ephemeral=True)
-    await ctx.send("ctx", ephemeral=True)
+    await ctx.channel.send("ctx", ephemeral=True)
     print("/=/=/=/=/=/=/=/=/=/=/=/=/=")
     crt_idx = gld_data.index[(gld_data['gld'] == ctx.message.guild.id)][0]
     print(gld_data.loc[crt_idx,"today_nw"])
     print("/=/=/=/=/=/=/=/=/=/=/=/=/=")
     
-    
-    
+
 try:
     bot.run(TOKEN)
 except discord.errors.LoginFailure as e:
