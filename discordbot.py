@@ -486,8 +486,8 @@ every_day.start()
 @bot.command()
 async def dev(ctx):
     global gld_data
-    await discord.interaction.response.send_message("Pong", ephemeral=True)
-    
+    await discord.interaction.response.send_message("interaction", ephemeral=True)
+    await ctx.send("ctx", ephemeral=True)
     print("/=/=/=/=/=/=/=/=/=/=/=/=/=")
     crt_idx = gld_data.index[(gld_data['gld'] == ctx.message.guild.id)][0]
     print(gld_data.loc[crt_idx,"today_nw"])
