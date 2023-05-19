@@ -439,13 +439,12 @@ async def sayHere(ctx):
     channel = ctx.channel
     await channel.send(f"{channel.name} 에서 갱신합니다.")
     await ctx.message.delete()
-
+'''
+'''
 @bot.command()
 async def sayTest(ctx):
     global channel
-    if not ctx.author.top_role.permissions.administrator:
-        await ctx.channel.send(str(ctx.author.mention + " 권한이 없습니다."))
-        return
+    
     
     await channel.send(f"{channel.name} Test done")
 '''
@@ -487,11 +486,13 @@ every_day.start()
 @bot.command()
 async def dev(ctx):
     global gld_data
-    
+    await discord.interaction.response.send_message(content="Pong", ephemeral=True)
     print("/=/=/=/=/=/=/=/=/=/=/=/=/=")
     crt_idx = gld_data.index[(gld_data['gld'] == ctx.message.guild.id)][0]
     print(gld_data.loc[crt_idx,"today_nw"])
     print("/=/=/=/=/=/=/=/=/=/=/=/=/=")
+    
+    
     
 try:
     bot.run(TOKEN)
