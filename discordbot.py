@@ -196,7 +196,7 @@ class minSelect(discord.ui.View):
             nm = ['크자카','누베르','쿠툼','카란다','가모스', '벨', '귄트/무라카', '오핀', '검은그림자']
             s = [""]
             for i in num:
-                sql = f"SELECT BS_KZK_{i}, BS_NBR_{i},BS_KT_{i},BS_KRD_{i},BS_GMT_{i},BS_BLL_{i},BS_ORC_{i},BS_OPN_{i},BS_DS_{i} FROM userTable WHERE id = '330877715542441984'"
+                sql = f"SELECT BS_KZK_{i}, BS_NBR_{i},BS_KT_{i},BS_KRD_{i},BS_GMT_{i},BS_BLL_{i},BS_ORC_{i},BS_OPN_{i},BS_DS_{i} FROM userTable WHERE id = {str(interaction.user.id)}"
                 cur.execute(sql)
                 result = cur.fetchall()[0]
                 for t in range(0, len(result)):
