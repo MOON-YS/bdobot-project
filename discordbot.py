@@ -19,6 +19,8 @@ SQL_HOST = os.environ['SQL_HOST']
 SQL_PORT = int(os.environ['SQL_PORT'])
 SQL_USER = os.environ['SQL_USER']
 SQL_PSWD = os.environ['SQL_PSWD']
+    
+KST = datetime.timezone(datetime.timedelta(hours=9))
 
 conn = None
 cur = None
@@ -218,7 +220,7 @@ class minSelect(discord.ui.View):
 
 @bot.tree.command(name="set_boss_alarm", description="보스 알람을 설정합니다.")
 async def set_boss_alarm(interaction: discord.interactions):
-    sql = f"INSERT IGNORE INTO userTable (id, BS_NBR_0, BS_NBR_5 , BS_NBR_10, BS_NBR_15, BS_KZK_0, BS_KZK_5  , BS_KZK_10 , BS_KZK_15 ,BS_KRD_0 , BS_KRD_5 , BS_KRD_10 , BS_KRD_15 ,BS_KT_0 , BS_KT_5 , BS_KT_10 , BS_KT_15 ,BS_OPN_0 , BS_OPN_5 , BS_OPN_10 , BS_OPN_15 ,BS_GMT_0 , BS_GMT_5 , BS_GMT_10 , BS_GMT_15 ,BS_BLL_0 , BS_BLL_5 , BS_BLL_10 , BS_BLL_15 ,BS_ORC_0 , BS_ORC_5 ,BS_ORC_10 ,BS_ORC_15, BS_DS_0, BS_DS_5  , BS_DS_10 , BS_DS_15)VALUES({str(int(interaction.user.id))},0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0)"
+    sql = f"INSERT IGNORE INTO userTable (id, BS_NBR_0, BS_NBR_5 , BS_NBR_10, BS_NBR_15, BS_KZK_0, BS_KZK_5  , BS_KZK_10 , BS_KZK_15 ,BS_KRD_0 , BS_KRD_5 , BS_KRD_10 , BS_KRD_15 ,BS_KT_0 , BS_KT_5 , BS_KT_10 , BS_KT_15 ,BS_OPN_0 , BS_OPN_5 , BS_OPN_10 , BS_OPN_15 ,BS_GMT_0 , BS_GMT_5 , BS_GMT_10 , BS_GMT_15 ,BS_BLL_0 , BS_BLL_5 , BS_BLL_10 , BS_BLL_15 ,BS_ORC_0 , BS_ORC_5 ,BS_ORC_10 ,BS_ORC_15, BS_DS_0, BS_DS_5  , BS_DS_10 , BS_DS_15)VALUES({str(int(interaction.user.id))},1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1)"
     cur.execute(sql)
     conn.commit()
     view = minSelect()
@@ -228,9 +230,9 @@ async def set_boss_alarm(interaction: discord.interactions):
 @tasks.loop(seconds=60)
 async def alert_boss():
     global boss_time_data,sql,cur,conn,bot
-    today_week = datetime.datetime.now().weekday()
-    crt_hh = int(datetime.datetime.now().hour)
-    crt_mm = int(datetime.datetime.now().minute)
+    today_week = datetime.datetime.now(tz=KST).weekday()
+    crt_hh = int(datetime.datetime.now(tz=KST).hour)
+    crt_mm = int(datetime.datetime.now(tz=KST).minute)
     
     now_alarm = boss_time_data[(boss_time_data["DATE_CODE"]==today_week)&(boss_time_data["HH"]==crt_hh)&(boss_time_data["mm"]==crt_mm)]
     if(now_alarm["DATE"].count() == 1):
@@ -256,8 +258,7 @@ async def alert_boss():
     print(f"{today_week}d-{crt_hh}:{crt_mm}")
     
     tp.sleep(1)
-    
-KST = datetime.timezone(datetime.timedelta(hours=9))
+
 time_s=datetime.time(hour=0,minute=0,second=1,tzinfo=KST)
 
 @tasks.loop(time=time_s)
