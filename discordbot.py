@@ -69,7 +69,7 @@ class minSelect(discord.ui.View):
     async def select_time(self, interaction: discord.interactions, select_item : discord.ui.Select):
         self.oi = interaction
         self.answer1 = select_item.values[0]
-        self.children[0].disabled = True
+        #self.children[0].disabled = True
         global sql, conn, cur
         
         sql = f"SELECT BS_KZK_{self.answer1}, BS_NBR_{self.answer1},BS_KT_{self.answer1},BS_KRD_{self.answer1},BS_GMT_{self.answer1},BS_BLL_{self.answer1},BS_ORC_{self.answer1},BS_OPN_{self.answer1},BS_DS_{self.answer1} FROM userTable WHERE id = {str(interaction.user.id)}"
