@@ -33,9 +33,6 @@ cur = conn.cursor()
 
 today_week = datetime.datetime.now().weekday()
 boss_time_data = pd.read_csv("./boss_alarm_schedule.csv",encoding="cp949")
-close_boss_index = boss_time_data[boss_time_data['DATE_CODE']==today_week]
-today_left = close_boss_index[(close_boss_index["HH"]*60+close_boss_index["mm"])>=(datetime.datetime.now().hour*60+datetime.datetime.now().minute)]
-close_alarm = today_left.index[0]
 bot = commands.Bot(command_prefix=PREFIX, intents=discord.Intents.all())
 
 @bot.event
@@ -45,7 +42,6 @@ async def on_ready():
         synced = await bot.tree.sync()
         print(f"Synced {len(synced)} command(s)")    
         alert_boss.start()
-        every_day.start()
     except Exception as e:
         print(e)
 
@@ -90,85 +86,132 @@ class minSelect(discord.ui.View):
         self.ds = result[8]
         
         #크자카 버튼
-        button_kzk = Button(label="크자카", style=discord.ButtonStyle.blurple)
+        button_kzk = Button(label="크자카", style=(discord.ButtonStyle.blurple if self.kzk==1 else discord.ButtonStyle.gray))
         async def button_callback_kzk(interaction):
             global sql, conn, cur
             self.kzk = int(not self.kzk)
-            await interaction.response.send_message(f"크자카 {self.answer1}분전 알람 {str_on if self.kzk else str_off}", delete_after=5,ephemeral=True)
+            self.children[1].style =(discord.ButtonStyle.blurple if self.kzk==1 else discord.ButtonStyle.gray)
+            await interaction.response.edit_message(view=self)
         button_kzk.callback = button_callback_kzk
         self.add_item(button_kzk)
         
         #누베르 버튼
-        button_nbr = Button(label="누베르", style=discord.ButtonStyle.blurple)
+        button_nbr = Button(label="누베르", style=(discord.ButtonStyle.blurple if self.nbr==1 else discord.ButtonStyle.gray))
         async def button_callback_nbr(interaction):
             global sql, conn, cur
             self.nbr = int(not self.nbr)
-            await interaction.response.send_message(f"누베르 {self.answer1}분전 알람 {str_on if self.nbr else str_off}", delete_after=5,ephemeral=True)
+            self.children[2].style =(discord.ButtonStyle.blurple if self.nbr==1 else discord.ButtonStyle.gray)
+            await interaction.response.edit_message(view=self)
         button_nbr.callback = button_callback_nbr
         self.add_item(button_nbr)
         
         #쿠툼 버튼
-        button_kt = Button(label="쿠툼", style=discord.ButtonStyle.blurple)
+        button_kt = Button(label="쿠툼", style=(discord.ButtonStyle.blurple if self.kt==1 else discord.ButtonStyle.gray))
         async def button_callback_kt(interaction):
             global sql, conn, cur
             self.kt = int(not self.kt)
-            await interaction.response.send_message(f"쿠툼 {self.answer1}분전 알람 {str_on if self.kt else str_off}", delete_after=5,ephemeral=True)
+            self.children[3].style =(discord.ButtonStyle.blurple if self.kt==1 else discord.ButtonStyle.gray)
+            await interaction.response.edit_message(view=self)
         button_kt.callback = button_callback_kt
         self.add_item(button_kt)
         
         #카란다 버튼
-        button_krd = Button(label="카란다", style=discord.ButtonStyle.blurple)
+        button_krd = Button(label="카란다", style=(discord.ButtonStyle.blurple if self.krd==1 else discord.ButtonStyle.gray))
         async def button_callback_krd(interaction):
             global sql, conn, cur
             self.krd = int(not self.krd)
-            await interaction.response.send_message(f"카란다 {self.answer1}분전 알람 {str_on if self.krd else str_off}", delete_after=5,ephemeral=True)
+            self.children[4].style =(discord.ButtonStyle.blurple if self.krd==1 else discord.ButtonStyle.gray)
+            await interaction.response.edit_message(view=self)
         button_krd.callback = button_callback_krd
         self.add_item(button_krd)
         
         #가모스 버튼
-        button_gmt = Button(label="가모스", style=discord.ButtonStyle.blurple)
+        button_gmt = Button(label="가모스", style=(discord.ButtonStyle.blurple if self.gmt==1 else discord.ButtonStyle.gray))
         async def button_callback_gmt(interaction):
             global sql, conn, cur
             self.gmt = int(not self.gmt)
-            await interaction.response.send_message(f"가모스 {self.answer1}분전 알람 {str_on if self.gmt else str_off}", delete_after=5,ephemeral=True)
+            self.children[5].style =(discord.ButtonStyle.blurple if self.gmt==1 else discord.ButtonStyle.gray)
+            await interaction.response.edit_message(view=self)
         button_gmt.callback = button_callback_gmt
         self.add_item(button_gmt)
         
         #벨 버튼
-        button_bll = Button(label="벨", style=discord.ButtonStyle.blurple)
+        button_bll = Button(label="벨", style=discord.ButtonStyle.blurple if self.bll==1 else discord.ButtonStyle.gray)
         async def button_callback_bll(interaction):
             global sql, conn, cur
             self.bll = int(not self.bll)
-            await interaction.response.send_message(f"벨 {self.answer1}분전 알람 {str_on if self.bll else str_off}", delete_after=5,ephemeral=True)
+            self.children[6].style =discord.ButtonStyle.blurple if self.bll==1 else discord.ButtonStyle.gray
+            await interaction.response.edit_message(view=self)
         button_bll.callback = button_callback_bll
         self.add_item(button_bll)
         
         #귄트/무라카 버튼
-        button_orc = Button(label="귄트/무라카", style=discord.ButtonStyle.blurple)
+        button_orc = Button(label="귄트/무라카", style=(discord.ButtonStyle.blurple if self.orc==1 else discord.ButtonStyle.gray))
         async def button_callback_orc(interaction):
             global sql, conn, cur
             self.orc = int(not self.orc)
-            await interaction.response.send_message(f"귄트/무라카 {self.answer1}분전 알람 {str_on if self.orc else str_off}", delete_after=5,ephemeral=True)
+            self.children[7].style =(discord.ButtonStyle.blurple if self.orc==1 else discord.ButtonStyle.gray)
+            await interaction.response.edit_message(view=self)
         button_orc.callback = button_callback_orc
         self.add_item(button_orc)
         
         #오핀 버튼
-        button_opn = Button(label="오핀", style=discord.ButtonStyle.blurple)
+        button_opn = Button(label="오핀", style=(discord.ButtonStyle.blurple if self.opn==1 else discord.ButtonStyle.gray))
         async def button_callback_opn(interaction):
             global sql, conn, cur
             self.opn = int(not self.opn)
-            await interaction.response.send_message(f"오핀 {self.answer1}분전 알람 {str_on if self.opn else str_off}", delete_after=5,ephemeral=True)
+            self.children[8].style =(discord.ButtonStyle.blurple if self.opn==1 else discord.ButtonStyle.gray)
+            await interaction.response.edit_message(view=self)
         button_opn.callback = button_callback_opn
         self.add_item(button_opn)
         
         #검그 버튼
-        button_ds = Button(label="검은그림자", style=discord.ButtonStyle.blurple)
+        button_ds = Button(label="검은그림자", style=(discord.ButtonStyle.blurple if self.ds==1 else discord.ButtonStyle.gray))
         async def button_callback_ds(interaction):
             global sql, conn, cur
             self.ds = int(not self.ds)
-            await interaction.response.send_message(f"검은그림자 {self.answer1}분전 알람 {str_on if self.ds else str_off}", delete_after=5,ephemeral=True)
+            self.children[9].style =(discord.ButtonStyle.blurple if self.ds==1 else discord.ButtonStyle.gray)
+            await interaction.response.edit_message(view=self)
         button_ds.callback = button_callback_ds
         self.add_item(button_ds)
+        
+        #모두 선택 버튼
+        button_all = Button(label="모두 선택", style=discord.ButtonStyle.green)
+        async def button_callback_all(interaction):
+            global sql, conn, cur
+            self.kzk = 1
+            self.nbr = 1
+            self.kt = 1
+            self.krd = 1
+            self.gmt = 1
+            self.bll = 1
+            self.orc = 1
+            self.opn = 1
+            self.ds = 1
+            for i in range(1,10):
+                self.children[i].style =discord.ButtonStyle.blurple
+            await interaction.response.edit_message(view=self)
+        button_all.callback = button_callback_all
+        self.add_item(button_all)
+        
+        #모두 해제 버튼
+        button_alld = Button(label="모두 해제", style=discord.ButtonStyle.red)
+        async def button_callback_alld(interaction):
+            global sql, conn, cur
+            self.kzk = 0
+            self.nbr = 0
+            self.kt = 0
+            self.krd = 0
+            self.gmt = 0
+            self.bll = 0
+            self.orc = 0
+            self.opn = 0
+            self.ds = 0
+            for i in range(1,10):
+                self.children[i].style =discord.ButtonStyle.gray
+            await interaction.response.edit_message(view=self)
+        button_alld.callback = button_callback_alld
+        self.add_item(button_alld)
         
         #적용 버튼
         button_accept = Button(label="적용", style=discord.ButtonStyle.green)
@@ -183,39 +226,13 @@ class minSelect(discord.ui.View):
         self.add_item(button_accept)
         
         #취소 버튼
-        button_accept = Button(label="취소", style=discord.ButtonStyle.red)
-        async def button_callback_accept(interaction):
+        button_cancle = Button(label="취소", style=discord.ButtonStyle.red)
+        async def button_callback_cancle(interaction):
             await interaction.response.send_message(f"알람 설정이 취소되었습니다", delete_after=5,ephemeral=True)
             await self.oi.delete_original_response()
-            
-        button_accept.callback = button_callback_accept
-        self.add_item(button_accept)
-        
-        #등록 현황 버튼
-        button_accept = Button(label="등록 현황", style=discord.ButtonStyle.gray)
-        async def button_callback_accept(interaction):
-            num = [0,5,10,15]
-            nm = ['크자카','누베르','쿠툼','카란다','가모스', '벨', '귄트/무라카', '오핀', '검은그림자']
-            s = [""]
-            for i in num:
-                sql = f"SELECT BS_KZK_{i}, BS_NBR_{i},BS_KT_{i},BS_KRD_{i},BS_GMT_{i},BS_BLL_{i},BS_ORC_{i},BS_OPN_{i},BS_DS_{i} FROM userTable WHERE id = {str(interaction.user.id)}"
-                cur.execute(sql)
-                result = cur.fetchall()[0]
-                for t in range(0, len(result)):
-                    if result[t] == 1 :
-                        s.append(f'[{i}분]{nm[t]}' if i != 0 else f"[즉시]{nm[t]}")
-                s.append('\n')
-            d = '```css'+'\n'.join(s)+'```'
-            embed = discord.Embed(
-                color=discord.Colour.dark_blue(),
-                description=d
-                )
-            await interaction.response.send_message(f"등록 현황을 표시합니다",ephemeral=True,embed=embed)
-
-            
-        button_accept.callback = button_callback_accept
-        self.add_item(button_accept)
-        
+        button_cancle.callback = button_callback_cancle
+        self.add_item(button_cancle)
+    
         await interaction.response.edit_message(view=self)
 
 @bot.tree.command(name="set_boss_alarm", description="보스 알람을 설정합니다.")
@@ -226,7 +243,26 @@ async def set_boss_alarm(interaction: discord.interactions):
     view = minSelect()
     await interaction.response.send_message(f"{interaction.user.mention} 보스알람을 설정합니다. \n해당 메세지는 2분후 자동으로 삭제됩니다",view=view, delete_after=120, ephemeral=True)
 
-
+@bot.tree.command(name="alarm_state", description="알람 등록 현황을 출력합니다")
+async def alarm_state(interaction: discord.interactions):
+    num = [0,5,10,15]
+    nm = ['크자카','누베르','쿠툼','카란다','가모스', '벨', '귄트/무라카', '오핀', '검은그림자']
+    s = [""]
+    for i in num:
+        sql = f"SELECT BS_KZK_{i}, BS_NBR_{i},BS_KT_{i},BS_KRD_{i},BS_GMT_{i},BS_BLL_{i},BS_ORC_{i},BS_OPN_{i},BS_DS_{i} FROM userTable WHERE id = {str(interaction.user.id)}"
+        cur.execute(sql)
+        result = cur.fetchall()[0]
+        for t in range(0, len(result)):
+            if result[t] == 1 :
+                s.append(f'[{i}분]{nm[t]}' if i != 0 else f"[즉시]{nm[t]}")
+        s.append('\n')
+    d = '```css'+'\n'.join(s)+'```'
+    embed = discord.Embed(
+        color=discord.Colour.dark_blue(),
+        description=d
+    )
+    await interaction.response.send_message(f"등록 현황을 표시합니다",ephemeral=True,embed=embed)
+            
 @tasks.loop(seconds=60)
 async def alert_boss():
     global boss_time_data,sql,cur,conn,bot
@@ -257,13 +293,6 @@ async def alert_boss():
    
     print(f"{today_week}d-{crt_hh}:{crt_mm}")
     
-    tp.sleep(1)
-
-time_s=datetime.time(hour=0,minute=0,second=1,tzinfo=KST)
-
-@tasks.loop(time=time_s)
-async def every_day():
-    print("alert")
     tp.sleep(1)
 
 try:
