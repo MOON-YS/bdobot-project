@@ -16,7 +16,7 @@ PREFIX = os.environ['PREFIX']
 TOKEN = os.environ['TOKEN']
 
 SQL_HOST = os.environ['SQL_HOST']
-SQL_PORT = os.environ['SQL_PORT']
+SQL_PORT = int(os.environ['SQL_PORT'])
 SQL_USER = os.environ['SQL_USER']
 SQL_PSWD = os.environ['SQL_PSWD']
 
