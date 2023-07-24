@@ -235,16 +235,16 @@ class minSelect(discord.ui.View):
     
         await interaction.response.edit_message(view=self)
 
-@bot.tree.command(name="알람설정", description="보스 알람을 설정합니다.")
-async def 보스알람설정(interaction: discord.interactions):
+@bot.tree.command(name="월드보스알람설정", description="보스 알람을 설정합니다.")
+async def 월드보스알람설정(interaction: discord.interactions):
     sql = f"INSERT IGNORE INTO userTable (id, BS_NBR_0, BS_NBR_5 , BS_NBR_10, BS_NBR_15, BS_KZK_0, BS_KZK_5  , BS_KZK_10 , BS_KZK_15 ,BS_KRD_0 , BS_KRD_5 , BS_KRD_10 , BS_KRD_15 ,BS_KT_0 , BS_KT_5 , BS_KT_10 , BS_KT_15 ,BS_OPN_0 , BS_OPN_5 , BS_OPN_10 , BS_OPN_15 ,BS_GMT_0 , BS_GMT_5 , BS_GMT_10 , BS_GMT_15 ,BS_BLL_0 , BS_BLL_5 , BS_BLL_10 , BS_BLL_15 ,BS_ORC_0 , BS_ORC_5 ,BS_ORC_10 ,BS_ORC_15, BS_DS_0, BS_DS_5  , BS_DS_10 , BS_DS_15)VALUES({str(int(interaction.user.id))},1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1)"
     cur.execute(sql)
     conn.commit()
     view = minSelect()
     await interaction.response.send_message(f"{interaction.user.mention} 보스알람을 설정합니다. \n해당 메세지는 2분후 자동으로 삭제됩니다",view=view, delete_after=120, ephemeral=True)
 
-@bot.tree.command(name="알람현황", description="알람 등록 현황을 출력합니다")
-async def 보스알람현황(interaction: discord.interactions):
+@bot.tree.command(name="월드보스알람현황", description="알람 등록 현황을 출력합니다")
+async def 월드보스알람현황(interaction: discord.interactions):
     num = [0,5,10,15]
     nm = ['크자카','누베르','쿠툼','카란다','가모스', '벨', '귄트/무라카', '오핀', '검은그림자']
     s = [""]
@@ -262,7 +262,17 @@ async def 보스알람현황(interaction: discord.interactions):
         description=d
     )
     await interaction.response.send_message(f"등록 현황을 표시합니다",ephemeral=True,embed=embed)
-            
+
+#필드보스 제보 및 알람판
+#카프라스 계산기
+#크론석 계산기
+#생산거점검색
+#명령어모음
+#쿠폰
+#대량가공알람
+#요리연금알람
+#재배알람
+
 @tasks.loop(seconds=60)
 async def alert_boss():
     global boss_time_data,sql,cur,conn,bot
