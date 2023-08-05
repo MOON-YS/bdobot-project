@@ -234,17 +234,24 @@ class minSelect(discord.ui.View):
         self.add_item(button_cancle)
     
         await interaction.response.edit_message(view=self)
-
-@bot.tree.command(name="월드보스알람설정", description="보스 알람을 설정합니다.")
-async def 월드보스알람설정(interaction: discord.interactions):
-    sql = f"INSERT IGNORE INTO userTable (id, BS_NBR_0, BS_NBR_5 , BS_NBR_10, BS_NBR_15, BS_KZK_0, BS_KZK_5  , BS_KZK_10 , BS_KZK_15 ,BS_KRD_0 , BS_KRD_5 , BS_KRD_10 , BS_KRD_15 ,BS_KT_0 , BS_KT_5 , BS_KT_10 , BS_KT_15 ,BS_OPN_0 , BS_OPN_5 , BS_OPN_10 , BS_OPN_15 ,BS_GMT_0 , BS_GMT_5 , BS_GMT_10 , BS_GMT_15 ,BS_BLL_0 , BS_BLL_5 , BS_BLL_10 , BS_BLL_15 ,BS_ORC_0 , BS_ORC_5 ,BS_ORC_10 ,BS_ORC_15, BS_DS_0, BS_DS_5  , BS_DS_10 , BS_DS_15)VALUES({str(int(interaction.user.id))},1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1)"
+  
+#월드 보스 알람 설정
+@bot.tree.command(name="월드보스_알람설정", description="보스 알람을 설정합니다.")
+async def 월드보스_알람설정(interaction: discord.interactions):
+    global cur, conn
+    sql = f"INSERT IGNORE INTO userTable (id, BS_NBR_0, BS_NBR_5 , BS_NBR_10, BS_NBR_15, BS_KZK_0, BS_KZK_5  , BS_KZK_10 , BS_KZK_15 ,BS_KRD_0 , BS_KRD_5 , BS_KRD_10 , BS_KRD_15 ,BS_KT_0 , BS_KT_5 , BS_KT_10 , BS_KT_15 ,BS_OPN_0 , BS_OPN_5 , BS_OPN_10 , BS_OPN_15 ,BS_GMT_0 , BS_GMT_5 , BS_GMT_10 , BS_GMT_15 ,BS_BLL_0 , BS_BLL_5 , BS_BLL_10 , BS_BLL_15 ,BS_ORC_0 , BS_ORC_5 ,BS_ORC_10 ,BS_ORC_15, BS_DS_0, BS_DS_5  , BS_DS_10 , BS_DS_15, BS_MUD_ALRM,BS_MUD_RPRT,BS_BEG_ALRM,BS_BEG_RPRT,BS_RAU_ALRM,BS_RAU_RPRT)VALUES({str(int(interaction.user.id))},1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1,0,1,0)"
     cur.execute(sql)
     conn.commit()
     view = minSelect()
-    await interaction.response.send_message(f"{interaction.user.mention} 보스알람을 설정합니다. \n해당 메세지는 2분후 자동으로 삭제됩니다",view=view, delete_after=120, ephemeral=True)
+    await interaction.response.send_message(f"{interaction.user.mention} 보스알람을 설정합니다. \n기본설정은 모두 ON 입니다. \n해당 메세지는 2분후 자동으로 삭제됩니다",view=view, delete_after=120, ephemeral=True)
 
-@bot.tree.command(name="월드보스알람현황", description="알람 등록 현황을 출력합니다")
-async def 월드보스알람현황(interaction: discord.interactions):
+#월드 보스 알람 현황 
+@bot.tree.command(name="월드보스_알람현황", description="알람 등록 현황을 출력합니다")
+async def 월드보스_알람현황(interaction: discord.interactions):
+    global cur, conn
+    sql = f"INSERT IGNORE INTO userTable (id, BS_NBR_0, BS_NBR_5 , BS_NBR_10, BS_NBR_15, BS_KZK_0, BS_KZK_5  , BS_KZK_10 , BS_KZK_15 ,BS_KRD_0 , BS_KRD_5 , BS_KRD_10 , BS_KRD_15 ,BS_KT_0 , BS_KT_5 , BS_KT_10 , BS_KT_15 ,BS_OPN_0 , BS_OPN_5 , BS_OPN_10 , BS_OPN_15 ,BS_GMT_0 , BS_GMT_5 , BS_GMT_10 , BS_GMT_15 ,BS_BLL_0 , BS_BLL_5 , BS_BLL_10 , BS_BLL_15 ,BS_ORC_0 , BS_ORC_5 ,BS_ORC_10 ,BS_ORC_15, BS_DS_0, BS_DS_5  , BS_DS_10 , BS_DS_15, BS_MUD_ALRM,BS_MUD_RPRT,BS_BEG_ALRM,BS_BEG_RPRT,BS_RAU_ALRM,BS_RAU_RPRT)VALUES({str(int(interaction.user.id))},1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1,0,1,0)"
+    cur.execute(sql)
+    conn.commit()
     num = [0,5,10,15]
     nm = ['크자카','누베르','쿠툼','카란다','가모스', '벨', '귄트/무라카', '오핀', '검은그림자']
     s = [""]
@@ -263,16 +270,267 @@ async def 월드보스알람현황(interaction: discord.interactions):
     )
     await interaction.response.send_message(f"등록 현황을 표시합니다",ephemeral=True,embed=embed)
 
-#필드보스 제보 및 알람판
-#카프라스 계산기
-#크론석 계산기
-#생산거점검색
-#명령어모음
-#쿠폰
-#대량가공알람
-#요리연금알람
-#재배알람
+#필드보스 알람 시행(1회)
+@tasks.loop(count=1)
+async def fieldBossSend(boss_nm):
+    global cur
+    sql = f"SELECT id FROM userTable WHERE BS_{boss_nm}_ALRM= 1"
+    cur.execute(sql)
+    result = cur.fetchall()
+    dic =  {'BEG':'베그','MUD':'진흙','RAU':'라우라우'}
+    
+    for record in result:
+        user = await bot.fetch_user(int(record[0]))
+        msg = f"'{dic[boss_nm]}'가 소환 되었습니다!"
+        await user.send(msg)
+    
+#필드보스 제보 및 알람
+#필보 제보 버튼
+class fbRprt(discord.ui.View):
+    def __init__(self, is_beg_reported, is_mud_reported, is_rau_reported,beg_stack,mud_stack,rau_stack, oi):
+        super().__init__()
+        self.is_beg_reported = is_beg_reported
+        self.is_mud_reported = is_mud_reported
+        self.is_rau_reported = is_rau_reported
+        self.beg_stack = beg_stack
+        self.mud_stack = mud_stack
+        self.rau_stack = rau_stack
+        self.oi = oi
+        
+    @discord.ui.button(label="베그",style=discord.ButtonStyle.red)
+    async def beg_click(self, interaction: discord.Interaction, button:discord.ui.Button):
+        global cur, conn
+        boss_nm = 'BEG'
+        sql = f"""
+        SELECT ZEN_TIME_HH, ZEN_TIME_MM FROM fieldBoss WHERE BOSS_NM='{boss_nm}'
+        """
+        cur.execute(sql)
+        result = cur.fetchall()[0]
+        last_zen_hh = result()[0]
+        last_zen_mm = result()[1]
+        current = 60*int(datetime.datetime.now(tz=KST).hour)+int(datetime.datetime.now(tz=KST).minute)
+        zen = 60*(last_zen_hh+12) + last_zen_mm
+        if current < zen:
+            await interaction.response.send_message("젠타임이 아닙니다", ephemeral=True,delete_after=5)
+            
+        elif self.is_beg_reported == 1 :
+            await interaction.response.send_message("이미 제보하셨습니다.", ephemeral=True,delete_after=5)
+        #제보스택 9 이상 달성시 수행
+        elif self.beg_stack >= 9:
+            fieldBossSend.start(boss_nm)
+            sql = f"""
+            UPDATE fieldBoss SET REPORT_STACK = 0 WHERE BOSS_NM = {boss_nm};
+            UPDATE userTable SET BS_{boss_nm}_RPRT = 0;
+            """
+            cur.execute(sql)
+            conn.commit()
+            
+        else:
+            hh = int(datetime.datetime.now(tz=KST).hour)
+            mm = int(datetime.datetime.now(tz=KST).minute)
+            sql = f"""
+            UPDATE userTable SET BS_{boss_nm}_RPRT = 1 WHERE id = {str(interaction.user.id)};
+            UPDATE fieldBoss SET REPORT_STACK = REPORT_STACK +1 WHERE BOSS_NM = {boss_nm};
+            UPDATE fieldBoss SET ZEN_TIME_HH = {hh} WHERE BOSS_NM = {boss_nm};
+            UPDATE fieldBoss SET ZEN_TIME_MM = {mm} WHERE BOSS_NM = {boss_nm};
+            """
+            cur.execute(sql)
+            conn.commit()
 
+            await interaction.response.send_message("베그 제보 완료", ephemeral=True,delete_after=5)
+        await self.oi.delete_original_response()
+            
+    @discord.ui.button(label="진흙",style=discord.ButtonStyle.red)
+    async def mud_click(self, interaction: discord.Interaction, button:discord.ui.Button):
+        boss_nm = "MUD"
+        global cur, conn
+        sql = f"""
+        SELECT ZEN_TIME_HH, ZEN_TIME_MM FROM fieldBoss WHERE BOSS_NM='{boss_nm}';
+        """
+        cur.execute(sql)
+        result = cur.fetchall()[0]
+        last_zen_hh = result()[0]
+        last_zen_mm = result()[1]
+        current = 60*int(datetime.datetime.now(tz=KST).hour)+int(datetime.datetime.now(tz=KST).minute)
+        zen = 60*(last_zen_hh+12) + last_zen_mm
+        if current < zen:
+            await interaction.response.send_message("젠타임이 아닙니다", ephemeral=True,delete_after=5)
+            
+        elif self.is_beg_reported == 1 :
+            await interaction.response.send_message("이미 제보하셨습니다.", ephemeral=True,delete_after=5)
+        #제보스택 9 이상 달성시 수행
+        elif self.beg_stack >= 9:
+            fieldBossSend.start(boss_nm)
+            sql = f"""
+            UPDATE fieldBoss SET REPORT_STACK = 0 WHERE BOSS_NM = {boss_nm};
+            UPDATE userTable SET BS_{boss_nm}_RPRT = 0;
+            """
+            cur.execute(sql)
+            conn.commit()
+            
+        else:
+            hh = int(datetime.datetime.now(tz=KST).hour)
+            mm = int(datetime.datetime.now(tz=KST).minute)
+            sql = f"""
+            UPDATE userTable SET BS_{boss_nm}_RPRT = 1 WHERE id = {str(interaction.user.id)};
+            UPDATE fieldBoss SET REPORT_STACK = REPORT_STACK +1 WHERE BOSS_NM = {boss_nm};
+            UPDATE fieldBoss SET ZEN_TIME_HH = {hh} WHERE BOSS_NM = {boss_nm};
+            UPDATE fieldBoss SET ZEN_TIME_MM = {mm} WHERE BOSS_NM = {boss_nm};
+            """
+            cur.execute(sql)
+            conn.commit()
+
+            await interaction.response.send_message("진흙 제보 완료", ephemeral=True,delete_after=5)
+        await self.oi.delete_original_response()
+  
+    @discord.ui.button(label="라우",style=discord.ButtonStyle.red)
+    async def rau_click(self, interaction: discord.Interaction, button:discord.ui.Button):
+        global cur, conn
+        boss_nm = "RAU"
+        sql = f"""
+        SELECT ZEN_TIME_HH, ZEN_TIME_MM FROM fieldBoss WHERE BOSS_NM='{boss_nm}';
+        """
+        cur.execute(sql)
+        result = cur.fetchall()[0]
+        last_zen_hh = result()[0]
+        last_zen_mm = result()[1]
+        current = 60*int(datetime.datetime.now(tz=KST).hour)+int(datetime.datetime.now(tz=KST).minute)
+        zen = 60*(last_zen_hh+12) + last_zen_mm
+        #젠타임 외 제보시 거부
+        if current < zen:
+            await interaction.response.send_message("젠타임이 아닙니다", ephemeral=True,delete_after=5)
+        #중복 제보 방지
+        elif self.is_beg_reported == 1 :
+            await interaction.response.send_message("이미 제보하셨습니다.", ephemeral=True,delete_after=5)
+        #제보스택 9 이상 달성시 수행
+        elif self.beg_stack >= 9:
+            fieldBossSend.start(boss_nm)
+            hh = int(datetime.datetime.now(tz=KST).hour)
+            mm = int(datetime.datetime.now(tz=KST).minute)
+            sql = f"""
+            UPDATE fieldBoss SET REPORT_STACK = 0 WHERE BOSS_NM = {boss_nm};
+            UPDATE userTable SET BS_{boss_nm}_RPRT = 0;
+            UPDATE fieldBoss SET ZEN_TIME_HH = {hh} WHERE BOSS_NM = {boss_nm};
+            UPDATE fieldBoss SET ZEN_TIME_MM = {mm} WHERE BOSS_NM = {boss_nm};
+            """
+            cur.execute(sql)
+            conn.commit()
+        #그외 제보 스택 추가
+        else:
+            sql = f"""
+            UPDATE userTable SET BS_{boss_nm}_RPRT = 1 WHERE id = {str(interaction.user.id)};
+            UPDATE fieldBoss SET REPORT_STACK = REPORT_STACK +1 WHERE BOSS_NM = {boss_nm};
+            """
+            cur.execute(sql)
+            conn.commit()
+
+            await interaction.response.send_message("라우라우 제보 완료", ephemeral=True,delete_after=5)
+        await self.oi.delete_original_response()
+     
+#필보 제보 명령
+@bot.tree.command(name="필드보스_제보", description="필드 보스 스폰을 DB에 제보합니다")
+async def 필드보스_제보(interaction: discord.interactions):
+    global cur, conn
+    sql = f"INSERT IGNORE INTO userTable (id, BS_NBR_0, BS_NBR_5 , BS_NBR_10, BS_NBR_15, BS_KZK_0, BS_KZK_5  , BS_KZK_10 , BS_KZK_15 ,BS_KRD_0 , BS_KRD_5 , BS_KRD_10 , BS_KRD_15 ,BS_KT_0 , BS_KT_5 , BS_KT_10 , BS_KT_15 ,BS_OPN_0 , BS_OPN_5 , BS_OPN_10 , BS_OPN_15 ,BS_GMT_0 , BS_GMT_5 , BS_GMT_10 , BS_GMT_15 ,BS_BLL_0 , BS_BLL_5 , BS_BLL_10 , BS_BLL_15 ,BS_ORC_0 , BS_ORC_5 ,BS_ORC_10 ,BS_ORC_15, BS_DS_0, BS_DS_5  , BS_DS_10 , BS_DS_15, BS_MUD_ALRM,BS_MUD_RPRT,BS_BEG_ALRM,BS_BEG_RPRT,BS_RAU_ALRM,BS_RAU_RPRT)VALUES({str(int(interaction.user.id))},1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1,0,1,0)"
+    cur.execute(sql)
+    conn.commit()
+    
+    sql = f"SELECT BS_BEG_RPRT, BS_MUD_RPRT, BS_RAU_RPRT FROM userTable WHERE id = {str(interaction.user.id)}"
+    cur.execute(sql)
+    result = cur.fetchall()[0]
+    sql = 'SELECT REPORT_STACK FROM fieldBoss'
+    cur.execute(sql)
+    result2 = cur.fetchall()
+    result = result + (result2[0][0],result2[1][0],result2[2][0])
+    view = fbRprt(result[0],result[1],result[2],result[3],result[4],result[5],interaction)
+    
+    await interaction.response.send_message(f"제보 감사합니다.",ephemeral=True, view=view)
+
+#필드보스 시간표
+@bot.tree.command(name="필드보스_시간표", description="필드 보스 스폰 시간을 확인합니다")
+async def 필드보스_시간표(interaction: discord.interactions):
+    global cur
+    boss_cd = ('BEG','MUD','RAU')
+    boss_nm = {'BEG':'베그','MUD':'진흙','RAU':'라우'}
+    s=[""]
+    for code in boss_cd:
+        sql = f"""
+        SELECT ZEN_TIME_HH, ZEN_TIME_MM FROM fieldBoss WHERE BOSS_NM='{code}'
+        """
+        cur.execute(sql)
+        tmp = cur.fetchall()[0]
+        lzen_hh = tmp[0]
+        lzen_mm = tmp[1] 
+        s.append(f"<{boss_nm[code]}> [{str(lzen_hh+12).zfill(2) if lzen_hh+12<24 else str(lzen_hh+12-24).zfill(2)}:{str(lzen_mm).zfill(2)}] ~ [{str(lzen_hh+19).zfill(2) if lzen_hh+19<24 else str(lzen_hh+19-24).zfill(2)}:{str(lzen_mm).zfill(2)}]")
+    d = '```xml'+'\n'.join(s)+'```'
+    
+    embed = discord.Embed(
+        title="필드 보스 젠 시간표",
+        color=discord.Colour.dark_red(),
+        description=d
+    )
+    await interaction.response.send_message(ephemeral=True,embed=embed)
+    
+#필보 알람 버튼
+class fbAlarm(discord.ui.View):
+    def __init__(self, beg, mud, rau, oi):
+        super().__init__()
+        self.mud = mud
+        self.beg = beg
+        self.rau = rau
+        self.children[0].style =(discord.ButtonStyle.blurple if self.beg==1 else discord.ButtonStyle.gray)
+        self.children[1].style =(discord.ButtonStyle.blurple if self.mud==1 else discord.ButtonStyle.gray)
+        self.children[2].style =(discord.ButtonStyle.blurple if self.rau==1 else discord.ButtonStyle.gray)
+        self.oi = oi
+
+    @discord.ui.button(label="베그",style=discord.ButtonStyle.blurple)
+    async def beg_click(self, interaction: discord.Interaction, button:discord.ui.Button):
+        self.beg = int(not self.beg)
+        self.children[0].style =(discord.ButtonStyle.blurple if self.beg==1 else discord.ButtonStyle.gray)
+        await interaction.response.edit_message(view=self)
+            
+    @discord.ui.button(label="진흙",style=discord.ButtonStyle.blurple)
+    async def mud_click(self, interaction: discord.Interaction, button:discord.ui.Button):
+        self.mud = int(not self.mud)
+        self.children[1].style =(discord.ButtonStyle.blurple if self.mud==1 else discord.ButtonStyle.gray)
+        await interaction.response.edit_message(view=self)
+  
+    @discord.ui.button(label="라우",style=discord.ButtonStyle.blurple)
+    async def rau_click(self, interaction: discord.Interaction, button:discord.ui.Button):
+        self.rau = int(not self.rau)
+        self.children[2].style =(discord.ButtonStyle.blurple if self.rau==1 else discord.ButtonStyle.gray)
+        await interaction.response.edit_message(view=self)
+        
+    @discord.ui.button(label="적용",style=discord.ButtonStyle.green)
+    async def accept_click(self, interaction: discord.Interaction, button:discord.ui.Button):
+        global sql, cur, conn
+        sql = f"UPDATE userTable SET BS_BEG_ALRM = {self.beg}, BS_MUD_ALRM = {self.mud},BS_RAU_ALRM = {self.rau} WHERE id = {str(interaction.user.id)}"
+        cur.execute(sql)
+        conn.commit()
+        await interaction.response.send_message(f"알람이 적용되었습니다", delete_after=5,ephemeral=True)
+        await self.oi.delete_original_response()
+        
+    @discord.ui.button(label="취소",style=discord.ButtonStyle.green)
+    async def cancle_click(self, interaction: discord.Interaction, button:discord.ui.Button):
+        await interaction.response.send_message(f"알람이 취소되었습니다", delete_after=5,ephemeral=True)
+        await self.oi.delete_original_response()
+
+#필보 알람 명령
+@bot.tree.command(name="필드보스_알람", description="필드보스 알람을 설정하거나 젠타임을 확인합니다")
+async def 필드보스_알람(interaction: discord.interactions):
+    
+    sql = f"INSERT IGNORE INTO userTable (id, BS_NBR_0, BS_NBR_5 , BS_NBR_10, BS_NBR_15, BS_KZK_0, BS_KZK_5  , BS_KZK_10 , BS_KZK_15 ,BS_KRD_0 , BS_KRD_5 , BS_KRD_10 , BS_KRD_15 ,BS_KT_0 , BS_KT_5 , BS_KT_10 , BS_KT_15 ,BS_OPN_0 , BS_OPN_5 , BS_OPN_10 , BS_OPN_15 ,BS_GMT_0 , BS_GMT_5 , BS_GMT_10 , BS_GMT_15 ,BS_BLL_0 , BS_BLL_5 , BS_BLL_10 , BS_BLL_15 ,BS_ORC_0 , BS_ORC_5 ,BS_ORC_10 ,BS_ORC_15, BS_DS_0, BS_DS_5  , BS_DS_10 , BS_DS_15, BS_MUD_ALRM,BS_MUD_RPRT,BS_BEG_ALRM,BS_BEG_RPRT,BS_RAU_ALRM,BS_RAU_RPRT)VALUES({str(int(interaction.user.id))},1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1,0,1,0)"
+    cur.execute(sql)
+    conn.commit()
+
+    sql = f"SELECT BS_BEG_ALRM, BS_MUD_ALRM, BS_RAU_ALRM FROM userTable WHERE id = {str(interaction.user.id)};"
+    cur.execute(sql)
+    result = cur.fetchall()[0]
+    view = fbAlarm(result[0],result[1],result[2],interaction)
+    
+    await interaction.response.send_message(f"필드보스 알람을 설정합니다",delete_after=60,ephemeral=True ,view=view)
+
+#월드보스 알람 시행(매분마다 체크)
 @tasks.loop(seconds=60)
 async def alert_boss():
     global boss_time_data,sql,cur,conn,bot
@@ -300,12 +558,24 @@ async def alert_boss():
             print(user)
             msg = f" {current_boss1}{ ('/'+ current_boss2) if not current_boss2=='.' else ''} 출현{(' '+str(time_tt)+'분 전') if not time_tt==0 else '!'}"
             await user.send(msg)
-   
-    print(f"{today_week}d-{crt_hh}:{crt_mm}")
-    
+            
+    print(f"{today_week}D-{crt_hh}:{crt_mm}")
     tp.sleep(1)
 
 try:
     bot.run(TOKEN)
 except discord.errors.LoginFailure as e:
     print("Improper token has been passed.")
+    
+#월드보스 알람(완)
+#필드보스 제보&알람(완) == 밴 기능 고려중
+
+#카프라스 계산기
+#크론석 계산기
+#생산 거점 검색
+#쿠폰 제보 & 열람
+#대량가공알람
+#요리연금알람
+#재배알람
+#데키아 등불 효율 계산기
+#명령어 및 봇 정보 일람
