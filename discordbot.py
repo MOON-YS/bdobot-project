@@ -19,7 +19,7 @@ SQL_HOST = os.environ['SQL_HOST']
 SQL_PORT = int(os.environ['SQL_PORT'])
 SQL_USER = os.environ['SQL_USER']
 SQL_PSWD = os.environ['SQL_PSWD']
-    
+      
 KST = datetime.timezone(datetime.timedelta(hours=9))
 
 conn = None
@@ -42,6 +42,7 @@ async def on_ready():
         synced = await bot.tree.sync()
         print(f"Synced {len(synced)} command(s)")    
         alert_boss.start()
+        update_db_conn.start()
     except Exception as e:
         print(e)
 
@@ -558,8 +559,21 @@ async def alert_boss():
             print(user)
             msg = f" {current_boss1}{ ('/'+ current_boss2) if not current_boss2=='.' else ''} 출현{(' '+str(time_tt)+'분 전') if not time_tt==0 else '!'}"
             await user.send(msg)
-            
-    print(f"{today_week}D-{crt_hh}:{crt_mm}")
+    tp.sleep(1)
+    
+#DB 재연결
+@tasks.loop(hours=12)
+async def update_db_conn():
+    global conn, cur
+    
+    conn.commit()
+    conn.close()
+    conn = pymysql.connect(host=SQL_HOST,port=SQL_PORT, user=SQL_USER, password=SQL_PSWD, db='pythonDB',charset='utf8',client_flag = CLIENT.MULTI_STATEMENTS)
+    cur = conn.cursor()
+    now = datetime.datetime.now(tz=KST)
+
+    print(f"{now} :::: DB connection updated")
+    
     tp.sleep(1)
 
 try:
