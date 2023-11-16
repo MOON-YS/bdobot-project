@@ -562,7 +562,7 @@ async def alert_boss():
     tp.sleep(1)
     
 #DB 재연결
-@tasks.loop(hours=12)
+@tasks.loop(hours=4)
 async def update_db_conn():
     global conn, cur
     
