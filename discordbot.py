@@ -12,6 +12,8 @@ import pandas as pd
 import pymysql
 from pymysql.constants import CLIENT
 import os
+import requests
+from bs4 import BeautifulSoup
 PREFIX = os.environ['PREFIX']
 TOKEN = os.environ['TOKEN']
 
@@ -34,15 +36,74 @@ cur = conn.cursor()
 today_week = datetime.datetime.now().weekday()
 boss_time_data = pd.read_csv("./boss_alarm_schedule.csv",encoding="cp949")
 bot = commands.Bot(command_prefix=PREFIX, intents=discord.Intents.all())
+def initGuild(search):
+  global conn, cur
+  updateTime = datetime.datetime.now(tz=KST).date()
+  headers = {
+      "Accept":"text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
+      "Host":"www.kr.playblackdesert.com",
+      "Accept-Encoding":"gzip, deflate, br",
+      "Accept-Language":"ko-KR,ko;q=0.8,en-US;q=0.5,en;q=0.3",
+      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/118.0"
+    }
 
+  url = f"https://www.kr.playblackdesert.com/ko-KR/Adventure/Guild/GuildProfile?guildName={search}&region=KR"
+  try:
+    res = requests.get(url, headers=headers) 
+  except:
+    print("잘못된 URL")
+    return
+  #res.raise_for_status()
+  soup = BeautifulSoup(res.text, "html.parser")
+  m = int(soup.select_one(".profile_detail > ul:nth-child(2) > li:nth-child(3) > span:nth-child(2) > span:nth-child(1) > em:nth-child(1)").text)
+  if m == 0 :
+    print("Error")
+    return
+  
+  guildMaster = soup.select_one("span.text:nth-child(1) > a:nth-child(1)").text
+  guild_members = []
+  for tag in soup.find_all("span","text"):
+      nm = str(tag.text.replace("\n",""))
+      sql =f"INSERT IGNORE INTO UserData (UserName,Guild) VALUES('{nm}','{search}');"
+      cur.execute(sql)
+      guild_members.append(nm)
+  guild_members = sorted(list(set(guild_members)))
+  members_str = ';'.join(guild_members)
+  
+  sql =f"INSERT IGNORE INTO GuildData (upCounter,Num,GuildName,GuildMaster,Members) VALUES(72,{m},'{search}','{guildMaster}','{members_str}');"
+  cur.execute(sql)
+  conn.commit()
+  
+  for user in guild_members:
+    
+    sql =f"SELECT Guild FROM UserData WHERE UserName = '{user}'"
+    cur.execute(sql)
+    result = cur.fetchall()[0][0]
+    if result != search:
+      sql = f"""
+        SELECT Logs FROM UserData WHERE UserName = '{user}';
+        """
+      cur.execute(sql)
+      result = cur.fetchall()[0][0]
+      userLog = ''
+      if result != 'None':
+        userLog = result.split(';')
+        userLog.append(str(f"[{updateTime}] {search} 가입"))
+        userLog = ';'.join(userLog)
+      else:
+        userLog = f"[{updateTime}] {search} 가입"
+    
+    conn.commit()
 @bot.event
 async def on_ready():
-    print(f"Bot is Up and Ready! ::::     {datetime.datetime.now()}")
+    
     try:
         synced = await bot.tree.sync()
         print(f"Synced {len(synced)} command(s)")    
         alert_boss.start()
         update_db_conn.start()
+        updateGuildMembers.start()
+        print(f"Bot is Up and Ready! ::::     {datetime.datetime.now()}")
     except Exception as e:
         print(e)
 
@@ -531,6 +592,73 @@ async def 필드보스_알람(interaction: discord.interactions):
     
     await interaction.response.send_message(f"필드보스 알람을 설정합니다",delete_after=60,ephemeral=True ,view=view)
 
+#길드멤버 보기
+@bot.tree.command(name="길드정보", description="길드 현원을 불러옵니다")
+async def 길드정보(interaction: discord.interactions, 길드명:str):
+    sql =f"SELECT Members,GuildMaster,Num FROM GuildData WHERE GuildName = '{길드명}'"
+    cur.execute(sql)
+    result = cur.fetchall()
+    if len(result) == 0:
+        await interaction.response.send_message(f"존재하지 않는 길드이거나 추적되지 않은 길드입니다. 잠시후 시도해주세요")
+        initGuild(길드명)
+        return
+    result = result[0]
+    members = result[0]
+    gm = result[1]
+    membersNum = int(result[2])
+    members = members.split(';')
+    l = len(members)
+    p = round(l / 3)
+    embed=discord.Embed(title=f"{길드명}")
+    embed.add_field(name = f"길드대장 : {gm}", value = "",inline=False)
+    embed.add_field(name = f"현원 : {membersNum}", value="", inline=False)
+    
+    m1 = '\n'.join(members[:p])
+    m2 = '\n'.join(members[p:p*2])
+    m3 = '\n'.join(members[p*2:])
+    
+    embed.add_field(name = "", value=m1,inline=True)
+    embed.add_field(name = "", value=m2,inline=True)
+    embed.add_field(name = "", value=m3,inline=True)
+    embed.set_footer(text="DB Since 2023.12.07")
+    await interaction.response.send_message(embed=embed)
+    
+#길드 연혁 보기
+@bot.tree.command(name="길드연혁", description="길드 연혁을 불러옵니다")
+async def 길드연혁(interaction: discord.interactions, 길드명:str):
+    sql =f"SELECT Logs FROM GuildData WHERE GuildName = '{길드명}'"
+    cur.execute(sql)
+    result = cur.fetchall()
+    if len(result) == 0: 
+        await interaction.response.send_message(f"존재하지 않는 길드이거나 추적되지 않은 길드입니다. 잠시후 시도해주세요")
+        initGuild(길드명)
+        return
+    
+    result = result[0][0]
+    logs = result.split(';')
+    log_str="\n".join(logs)
+    embed=discord.Embed(title=f"{길드명} 길드연혁")
+    embed.add_field(name = "", value=log_str,inline=True)
+    embed.set_footer(text="DB Since 2023.12.07")
+    await interaction.response.send_message(embed=embed)
+
+#유저추적
+@bot.tree.command(name="길드추적", description="해당유저의 길드가입연혁 및 현재 길드를 불러옵니다")
+async def 길드추적(interaction: discord.interactions, 가문명:str):
+  sql =f"SELECT Guild, Logs FROM UserData WHERE UserName = '{가문명}'"
+  cur.execute(sql)
+  result = cur.fetchall()
+  if len(result) == 0: return
+  guild = result[0][0]
+  result = result[0][1]
+  logs = result.split(';')
+  log_str="\n".join(logs)
+  embed=discord.Embed(title=f"가문명 : {가문명}")
+  embed.add_field(name = f"현재길드 : {guild}", value = "",inline=False)
+  embed.add_field(name = f"가입연혁", value = f"{log_str}",inline=False)
+  embed.set_footer(text="DB Since 2023.12.07")
+  await interaction.response.send_message(embed=embed)
+  
 #월드보스 알람 시행(매분마다 체크)
 @tasks.loop(seconds=60)
 async def alert_boss():
@@ -554,9 +682,9 @@ async def alert_boss():
 
         cur.execute(sql)
         result = cur.fetchall()
+        print(str(datetime.datetime.now(tz=KST).date())+"Send to "+str(len(result)) +" Player")
         for record in result:
             user = await bot.fetch_user(int(record[0]))
-            print(user)
             msg = f" {current_boss1}{ ('/'+ current_boss2) if not current_boss2=='.' else ''} 출현{(' '+str(time_tt)+'분 전') if not time_tt==0 else '!'}"
             await user.send(msg)
     tp.sleep(1)
@@ -570,11 +698,142 @@ async def update_db_conn():
     conn.close()
     conn = pymysql.connect(host=SQL_HOST,port=SQL_PORT, user=SQL_USER, password=SQL_PSWD, db='pythonDB',charset='utf8',client_flag = CLIENT.MULTI_STATEMENTS)
     cur = conn.cursor()
-    now = datetime.datetime.now(tz=KST)
+    now = datetime.datetime.now(tz=KST).date()
 
     print(f"{now} :::: DB connection updated")
     
     tp.sleep(1)
+
+@tasks.loop(minutes=20)
+async def updateGuildMembers():
+  updateTime = datetime.datetime.now(tz=KST).date()
+  sql =f"SELECT GuildName,upCounter FROM GuildData"
+  cur.execute(sql)
+  result = cur.fetchall()
+  for search,upCounter in result:
+    sql = f"""
+    SELECT upCounter FROM GuildData WHERE GuildName = "{search}";
+    """
+    cur.execute(sql)
+    result = cur.fetchall()[0]
+    upCounter = int(result[0]) - 1
+    
+    if upCounter == 0:
+      headers = {
+        "Accept":"text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
+        "Host":"www.kr.playblackdesert.com",
+        "Accept-Encoding":"gzip, deflate, br",
+        "Accept-Language":"ko-KR,ko;q=0.8,en-US;q=0.5,en;q=0.3",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/118.0"
+      }
+
+      url = f"https://www.kr.playblackdesert.com/ko-KR/Adventure/Guild/GuildProfile?guildName={search}&region=KR" 
+      res = requests.get(url, headers=headers) 
+      res.raise_for_status()
+      
+
+      sql = f"""
+      SELECT Members,Logs FROM GuildData WHERE GuildName = "{search}";
+      """
+      cur.execute(sql)
+      result = cur.fetchall()[0]
+      
+      prev_guild_member = result[0].split(';')
+      log = result[1].split(';')
+      log.remove('None')
+      
+      soup = BeautifulSoup(res.text, "html.parser")
+      
+      guild_members = []
+      guildMaster = soup.select_one("span.text:nth-child(1) > a:nth-child(1)").text
+
+      for tag in soup.find_all("span","text"):
+        nm = str(tag.text.replace("\n",""))
+        cur.execute(sql)
+        guild_members.append(nm)
+
+      guild_members = sorted(list(set(guild_members)))
+
+      new = set(guild_members)
+      old = set(prev_guild_member)
+      
+      addedmember = new - old #추가된인원
+      secemember = old - new #나간 인원
+
+      if len(addedmember) > 0:
+        for aMember in addedmember:
+          log.append(f"[{updateTime}] {aMember} 가입")
+
+          sql = f"""
+          INSERT IGNORE INTO UserData (UserName,Guild) VALUES('{aMember}','{search}');
+          UPDATE UserData SET Guild = '{search}' WHERE UserName = '{aMember}';
+          """
+          cur.execute(sql)
+          sql = f"""
+          SELECT Logs FROM UserData WHERE UserName = '{aMember}';
+          """
+          cur.execute(sql)
+          result = cur.fetchall()[0][0]
+          userLog = ''
+          if result != 'None':
+            userLog = result.split(';')
+            userLog.append(str(f"[{updateTime}] {search} 가입"))
+            userLog = ';'.join(userLog)
+          else:
+            userLog = f"[{updateTime}] {search} 가입"
+          
+          sql = f"UPDATE UserData SET Logs = '{userLog}' WHERE UserName = '{aMember}'"
+          cur.execute(sql)
+          conn.commit()
+          
+      if len(secemember) > 0:
+        for sMember in secemember:
+          log.append(f"[{updateTime}] {sMember} 탈퇴")
+          
+          sql = f"""
+          INSERT IGNORE INTO UserData (UserName,Guild) VALUES('{sMember}','{search}');
+          UPDATE UserData SET Guild = 'None' WHERE UserName = '{sMember}';
+          """
+          cur.execute(sql)
+          conn.commit()
+          sql = f"""
+          SELECT Logs FROM UserData WHERE UserName = "{sMember}";
+          """
+          cur.execute(sql)
+          result = cur.fetchall()[0][0]
+          if result != 'None':
+            userLog = result.split(';')
+            userLog.append(str(f"[{updateTime}] {search} 탈퇴"))
+            userLog = ';'.join(userLog)
+          else:
+            userLog = f"[{updateTime}] {search} 탈퇴"
+            
+          sql = f"UPDATE UserData SET Logs = '{userLog}' WHERE UserName = '{sMember}'"
+          cur.execute(sql)
+          conn.commit()
+
+      
+      log_str = ';'.join(log[-50:])
+      memberNum = len(guild_members)
+      members_str = ';'.join(guild_members)
+      
+      
+      sql = f"""
+      UPDATE GuildData SET upCounter = 72 WHERE GuildName = '{search}';
+      UPDATE GuildData SET GuildMaster = '{guildMaster}' WHERE GuildName = '{search}';
+      UPDATE GuildData SET Num = {memberNum} WHERE GuildName = '{search}';
+      UPDATE GuildData SET Members = '{members_str}' WHERE GuildName = '{search}';
+      UPDATE GuildData SET Logs = '{log_str}' WHERE GuildName = '{search}';
+      """
+      cur.execute(sql)
+      conn.commit()
+    
+    else :
+      sql = f"""
+      UPDATE GuildData SET upCounter = {upCounter} WHERE GuildName = "{search}";
+      """
+      cur.execute(sql)
+      conn.commit()
 
 try:
     bot.run(TOKEN)
@@ -588,8 +847,11 @@ except discord.errors.LoginFailure as e:
 #크론석 계산기
 #생산 거점 검색
 #쿠폰 제보 & 열람
-#대량가공알람
+#대량가공알람 
 #요리연금알람
 #재배알람
 #데키아 등불 효율 계산기
 #명령어 및 봇 정보 일람
+#연구소 패치
+#이벤트
+#보스시간표
