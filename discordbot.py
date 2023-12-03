@@ -648,7 +648,9 @@ async def 길드추적(interaction: discord.interactions, 가문명:str):
   sql =f"SELECT Guild, Logs FROM UserData WHERE UserName = '{가문명}'"
   cur.execute(sql)
   result = cur.fetchall()
-  if len(result) == 0: return
+  if len(result) == 0: 
+      await interaction.response.send_message(f"존재하지 않는 유저이거나 추적되지 않은 유저입니다.")
+      return
   guild = result[0][0]
   result = result[0][1]
   logs = result.split(';')
