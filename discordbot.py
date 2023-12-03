@@ -645,21 +645,21 @@ async def 길드연혁(interaction: discord.interactions, 길드명:str):
 #유저추적
 @bot.tree.command(name="길드추적", description="해당유저의 길드가입연혁 및 현재 길드를 불러옵니다")
 async def 길드추적(interaction: discord.interactions, 가문명:str):
-  sql =f"SELECT Guild, Logs FROM UserData WHERE UserName = '{가문명}'"
-  cur.execute(sql)
-  result = cur.fetchall()
-  if len(result) == 0: 
-      await interaction.response.send_message(f"존재하지 않는 유저이거나 추적되지 않은 유저입니다.")
-      return
-  guild = result[0][0]
-  result = result[0][1]
-  logs = result.split(';')
-  log_str="\n".join(logs)
-  embed=discord.Embed(title=f"가문명 : {가문명}")
-  embed.add_field(name = f"현재길드 : {guild}", value = "",inline=False)
-  embed.add_field(name = f"가입연혁", value = f"{log_str}",inline=False)
-  embed.set_footer(text="DB Since 2023.12.07")
-  await interaction.response.send_message(embed=embed)
+    sql =f"SELECT Guild, Logs FROM UserData WHERE UserName = '{가문명}'"
+    cur.execute(sql)
+    result = cur.fetchall()
+    if len(result) == 0: 
+        await interaction.response.send_message(f"존재하지 않는 유저이거나 추적되지 않은 유저입니다.")
+        return
+    guild = result[0][0]
+    result = result[0][1]
+    logs = result.split(';')
+    log_str="\n".join(logs)
+    embed=discord.Embed(title=f"가문명 : {가문명}")
+    embed.add_field(name = f"현재길드 : {guild}", value = "",inline=False)
+    embed.add_field(name = f"가입연혁", value = f"{log_str}",inline=False)
+    embed.set_footer(text="DB Since 2023.12.07")
+    await interaction.response.send_message(embed=embed)
   
 #월드보스 알람 시행(매분마다 체크)
 @tasks.loop(seconds=60)
