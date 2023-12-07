@@ -14,6 +14,8 @@ from pymysql.constants import CLIENT
 import os
 import requests
 from bs4 import BeautifulSoup
+import random
+import math
 PREFIX = os.environ['PREFIX']
 TOKEN = os.environ['TOKEN']
 
@@ -103,6 +105,7 @@ async def on_ready():
         alert_boss.start()
         update_db_conn.start()
         updateGuildMembers.start()
+        shuffleGuildTrackerTimer.start()
         print(f"Bot is Up and Ready! ::::     {datetime.datetime.now()}")
     except Exception as e:
         print(e)
@@ -836,7 +839,30 @@ async def updateGuildMembers():
       """
       cur.execute(sql)
       conn.commit()
-
+      
+@tasks.loop(hours=24)
+async def shuffleGuildTrackerTimer():
+    global sql,cur
+    sql =f"SELECT GuildName FROM GuildData"
+    cur.execute(sql)
+    result = cur.fetchall()
+    
+    guildCount = len(result)
+    timeArray = []
+    for i in range(0,guildCount):
+        timeArray.append(math.floor(i/(guildCount/72))+1)
+    guilds = []
+    for guild in result:
+        guilds.append(guild[0])
+    random.shuffle(timeArray)
+    print(guilds)
+    print(timeArray)
+    for g,time in zip(guilds,timeArray):
+        sql =f"UPDATE GuildData SET upCounter = {time} WHERE GuildName = '{g}';"
+        cur.execute(sql)
+        
+    conn.commit()
+  
 try:
     bot.run(TOKEN)
 except discord.errors.LoginFailure as e:
