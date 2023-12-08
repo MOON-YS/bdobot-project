@@ -745,7 +745,8 @@ async def updateGuildMembers():
       
       prev_guild_member = result[0].split(';')
       log = result[1].split(';')
-      log.remove('None')
+      if 'None' in log : 
+        log.remove('None')
       
       soup = BeautifulSoup(res.text, "html.parser")
       
