@@ -856,8 +856,6 @@ async def shuffleGuildTrackerTimer():
     for guild in result:
         guilds.append(guild[0])
     random.shuffle(timeArray)
-    print(guilds)
-    print(timeArray)
     for g,time in zip(guilds,timeArray):
         sql =f"UPDATE GuildData SET upCounter = {time} WHERE GuildName = '{g}';"
         cur.execute(sql)
